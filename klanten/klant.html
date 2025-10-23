@@ -8,7 +8,53 @@
     <link rel="stylesheet" href="../medewerkerbeheer.css">
 </head>
 <body>
-    <div id="header-container"></div>
+    <header class="header">
+        <div class="header-container">
+            <!-- Logo and main navigation -->
+            <div class="header-left">
+                <div class="logo">
+                    <h1>QPlanning</h1>
+                </div>
+                <nav class="main-nav">
+                    <ul class="nav-list">
+                        <li><a href="/index.html" class="nav-link active">Overzicht</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="nav-link dropdown-toggle">Plannen</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/Boekingen/BoekingOverzicht.html" class="dropdown-link">Boekingen</a></li>
+                                <li><a href="#" class="dropdown-link">Klantenplanning</a></li>
+                                <li><a href="#" class="dropdown-link">Medewerkerplanning</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="nav-link dropdown-toggle">Beheer</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/klanten/klant.html" class="dropdown-link">Klanten beheren</a></li>
+                                <li><a href="/Medewerker/medewerkerbeheer.html" class="dropdown-link">Medewerkers beheren</a></li>
+                                <li><a href="#" class="dropdown-link">Gebruikers beheren</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            
+            <!-- Account section -->
+            <div class="header-right">
+                <div class="account-dropdown">
+                    <button class="account-btn" id="accountBtn">
+                        <svg class="account-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </button>
+                    <ul class="account-menu" id="accountMenu">
+                        <li><a href="#" class="account-link">Wijzig wachtwoord</a></li>
+                        <li><a href="#" class="account-link">Log uit</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
 
     <main class="main-content">
         <div class="content-container">
@@ -309,7 +355,7 @@
                 if (!dataGeldig) {
                     console.log("Geen (of ongeldige) localStorage data, laden uit klanten.json...");
                     try {
-                        const response = await fetch('../klanten.json'); 
+                        const response = await fetch('/klanten/klanten.json'); 
                         if (!response.ok) throw new Error('Kon klanten.json niet laden');
                         klantenData = await response.json();
                         saveKlanten(); 
