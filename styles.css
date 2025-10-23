@@ -308,3 +308,291 @@ body {
     outline: 2px solid #2c3e50;
     outline-offset: 2px;
 }
+
+/* ================================== */
+/* === Stijlen voor Klanten Pagina === */
+/* ================================== */
+
+/* Header binnen de content (Titel + Knop) */
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap; /* Zorgt dat de knop onder de titel springt op kleine schermen */
+    gap: 15px;
+}
+
+/* Algemene knopstijlen */
+.btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    line-height: 1.2;
+}
+
+/* Primaire knop (passend bij header) */
+.btn-primary {
+    background-color: #2c3e50;
+    color: white;
+}
+.btn-primary:hover {
+    background-color: #34495e;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Secundaire knop (voor 'Bewerken') */
+.btn-secondary {
+    background-color: #f8f9fa;
+    color: #333;
+    border: 1px solid #ddd;
+}
+.btn-secondary:hover {
+    background-color: #e9ecef;
+}
+
+/* Gevaar knop (voor 'Verwijderen') */
+.btn-danger {
+    background-color: #e74c3c;
+    color: white;
+}
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+/* Data Tabel Stijlen */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.data-table th,
+.data-table td {
+    border: 1px solid #e0e0e0;
+    padding: 12px 15px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.data-table th {
+    background-color: #f8f9fa; /* Lichte header */
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.data-table tbody tr:nth-child(even) {
+    background-color: #fdfdfd;
+}
+
+.data-table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Actie knoppen in de tabel */
+.data-table td[data-label="Acties"] {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.data-table .btn {
+    padding: 6px 10px;
+    font-size: 13px;
+}
+
+/* Responsive tabel aanpassingen */
+@media (max-width: 768px) {
+    /* Verberg de tabel headers */
+    .data-table thead {
+        display: none;
+    }
+    
+    .data-table tr {
+        display: block;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .data-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 15px;
+        border: none;
+        border-bottom: 1px solid #f0f0f0;
+        text-align: right; /* Zorgt dat de waarde rechts staat */
+    }
+    
+    .data-table td:last-child {
+        border-bottom: none;
+    }
+
+    /* Voeg het 'data-label' toe als pseudo-element */
+    .data-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #333;
+        margin-right: 15px;
+        text-align: left; /* Zorgt dat het label links staat */
+    }
+    
+    /* Zorg dat de actieknoppen netjes staan */
+    .data-table td[data-label="Acties"] {
+        justify-content: flex-end; /* Knoppen rechts uitlijnen */
+    }
+    .data-table td[data-label="Acties"]::before {
+        align-self: center; /* Label centreren met de knoppen */
+    }
+}
+
+/* ================================== */
+/* === Stijlen voor Modal/Formulier === */
+/* ================================== */
+
+/* De modal achtergrond (overlay) */
+.modal {
+    display: none; /* <-- DEZE IS NU CORRECT INGESTELD OP 'none' */
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Scrollen als de modal te hoog is */
+    background-color: rgba(0, 0, 0, 0.4); /* Zwarte overlay */
+    
+    /* Toegevoegd voor centreren: */
+    /* display: flex; <-- Wordt 'flex' via JavaScript */
+    align-items: center; /* Verticaal centreren */
+    justify-content: center; /* Horizontaal centreren */
+}
+
+/* De modal content (de witte box) */
+.modal-content {
+    background-color: #fff;
+    padding: 25px 30px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    
+    /* Aangepast voor breedte en centreren */
+    margin: 20px; /* Ruimte vanaf de schermranden */
+    width: 90%;
+    max-width: 700px; /* Breder gemaakt voor 2-kolom layout */
+}
+
+/* De sluitknop (X) */
+.modal-close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 1;
+    cursor: pointer;
+}
+.modal-close:hover,
+.modal-close:focus {
+    color: #333;
+    text-decoration: none;
+}
+
+.modal-content h3 {
+    color: #2c3e50;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+/* Layout voor 2 kolommen */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 gelijke kolommen */
+    gap: 0 20px; /* Alleen ruimte TUSSEN kolommen */
+}
+
+/* Veld dat de volle breedte pakt */
+.form-group.full-width {
+    grid-column: 1 / -1; /* Overspant beide kolommen */
+}
+
+/* Formulier stijlen */
+.form-group {
+    margin-bottom: 15px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    color: #555;
+}
+
+/* Standaardiseer alle invoervelden */
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group input[type="number"],
+.form-group input[type="date"],
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: white; /* Zorgt voor witte achtergrond op date/select */
+}
+
+/* Nette placeholder voor 'verplichte' dropdowns */
+.form-group select:required:invalid {
+    color: #888;
+}
+.form-group select option {
+    color: #333;
+}
+
+/* Focus stijl */
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #2c3e50;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.1);
+}
+
+/* Knoppen onderaan formulier */
+.form-actions {
+    margin-top: 25px;
+    display: flex;
+    justify-content: flex-end; /* Knoppen rechts uitlijnen */
+    gap: 10px;
+}
+
+/* Aanpassing knop 'Sluiten' (secundair) */
+.form-actions .btn-secondary {
+    background-color: #f8f9fa;
+    color: #333;
+    border: 1px solid #ddd;
+}
+.form-actions .btn-secondary:hover {
+    background-color: #e9ecef;
+}
+
+/* Responsive: 1 kolom op kleine schermen */
+@media (max-width: 480px) {
+    .form-grid {
+        grid-template-columns: 1fr; /* 1 kolom op mobiel */
+        gap: 0;
+    }
+}
