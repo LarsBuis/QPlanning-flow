@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klantenbeheer - QPlanning</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="header-left">
+                <div class="logo">
+                    <h1>QPlanning</h1>
+                </div>
+                <nav class="main-nav">
+                    <ul class="nav-list">
+                        <li><a href="../index.html" class="nav-link">Overzicht</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="nav-link dropdown-toggle">Plannen</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#" class="dropdown-link">Boekingen</a></li>
+                                <li><a href="#" class="dropdown-link">Klantenplanning</a></li>
+                                <li><a href="#" class="dropdown-link">Medewerkerplanning</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="nav-link dropdown-toggle active">Beheer</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="klant.html" class="dropdown-link">Klanten beheren</a></li>
+                                <li><a href="#" class="dropdown-link">Medewerkers beheren</a></li>
+                                <li><a href="#" class="dropdown-link">Gebruikers beheren</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            
+            <div class="header-right">
+                <div class="account-dropdown">
+                    <button class="account-btn" id="accountBtn">
+                        <svg class="account-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </button>
+                    <ul class="account-menu" id="accountMenu">
+                        <li><a href="#" class="account-link">Wijzig wachtwoord</a></li>
+                        <li><a href="#" class="account-link">Log uit</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="content-container">
+            
+            <div class="content-header">
+                <h2>Klantenbeheer</h2>
+                <button class="btn btn-primary" id="add-klant-btn">Nieuwe klant toevoegen</button>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Klant naam</th>
+                        <th>Partner/Manager</th>
+                        <th class="col-budget">Budget</th> <th>Startdatum</th>
+                        <th>Einddatum</th>
+                        <th class="col-actions">Acties</th> </tr>
+                </thead>
+                <tbody id="klanten-tabel-body">
+                    </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div class="modal" id="klant-modal">
+        <div class="modal-content">
+            <span class="modal-close" id="modal-close-btn">&times;</span>
+            <h3 id="modal-title">Klant toevoegen</h3>
+            
+            <form id="klant-form">
+                <input type="hidden" id="klant-id">
+                
+                <div class="form-group full-width">
+                    <label for="klant-naam">Klant naam</label>
+                    <input type="text" id="klant-naam" required>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="klant-boekjaar">Boekjaar</label>
+                        <input type="text" id="klant-boekjaar" maxlength="4" placeholder="2025">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="klant-budget">Budget *</label>
+                        <input type="number" id="klant-budget" placeholder="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="klant-partner">Partner/Manager *</label>
+                        <select id="klant-partner" required>
+                            <option value="" disabled selected>Selecteer...</option>
+                            <option value="Jan Jansen">Jan Jansen</option>
+                            <option value="Marieke de Vries">Marieke de Vries</option>
+                            <option value="Pieter Smit">Pieter Smit</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="klant-verantwoordelijk">Verantwoordelijk team</label>
+                        <select id="klant-verantwoordelijk">
+                            <option value="" disabled selected>Selecteer...</option>
+                            <option value="Team Audit A">Team Audit A</option>
+                            <option value="Team Accountancy">Team Accountancy</option>
+                            <option value="Team Advies">Team Advies</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="klant-planbaar">Planbaar door teams</label>
+                        <select id="klant-planbaar">
+                            <option value="" disabled selected>Selecteer...</option>
+                            <option value="Team Audit A, Team Audit B">Team Audit A, Team Audit B</option>
+                            <option value="Team Accountancy">Team Accountancy</option>
+                            <option value="Alle teams">Alle teams</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        </div>
+
+                    <div class="form-group">
+                        <label for="klant-startdatum">Startdatum</label>
+                        <input type="date" id="klant-startdatum">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="klant-einddatum">Einddatum</label>
+                        <input type="date" id="klant-einddatum">
+                    </div>
+                </div> <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="modal-cancel-btn">Sluiten</button>
+                    <button type="submit" class="btn btn-primary" id="modal-save-btn">Toevoegen Klant</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        // --- NIEUWE Helper Functies ---
+        function formatCurrency(value) {
+            if (!value) return '-';
+            try {
+                const number = parseFloat(value);
+                // Formatteer als Nederlandse Euro
+                return '€ ' + number.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            } catch (e) {
+                return '-';
+            }
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            try {
+                const date = new Date(dateString);
+                // Voorkom "Invalid Date"
+                if (isNaN(date.getTime())) return '-';
+                
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0'); // Maanden zijn 0-based
+                const year = date.getFullYear();
+                return `${day}-${month}-${year}`;
+            } catch (e) {
+                return '-';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // --- Variabelen ---
+            let klantenData = [];
+            const localStorageKey = 'qplanning_klanten_v2'; 
+            const tabelBody = document.getElementById('klanten-tabel-body');
+            
+            // Modal elementen
+            const modal = document.getElementById('klant-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+            const modalCancelBtn = document.getElementById('modal-cancel-btn');
+            const addKlantBtn = document.getElementById('add-klant-btn');
+            const klantForm = document.getElementById('klant-form');
+            const modalSaveBtn = document.getElementById('modal-save-btn');
+            
+            // Formulier velden
+            const klantIdInput = document.getElementById('klant-id');
+            const klantNaamInput = document.getElementById('klant-naam');
+            const klantBoekjaarInput = document.getElementById('klant-boekjaar');
+            const klantBudgetInput = document.getElementById('klant-budget');
+            const klantPartnerInput = document.getElementById('klant-partner');
+            const klantVerantwoordelijkInput = document.getElementById('klant-verantwoordelijk');
+            const klantPlanbaarInput = document.getElementById('klant-planbaar');
+            const klantStartdatumInput = document.getElementById('klant-startdatum');
+            const klantEinddatumInput = document.getElementById('klant-einddatum');
+
+            // --- Dropdown Logica ---
+            const dropdowns = document.querySelectorAll('.dropdown');
+            const accountBtn = document.getElementById('accountBtn');
+            const accountMenu = document.getElementById('accountMenu');
+            dropdowns.forEach(dropdown => {
+                const toggle = dropdown.querySelector('.dropdown-toggle');
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault(); e.stopPropagation();
+                    dropdowns.forEach(d => { if (d !== dropdown) d.classList.remove('active'); });
+                    dropdown.classList.toggle('active');
+                });
+            });
+            const accountDropdown = document.querySelector('.account-dropdown');
+            accountBtn.addEventListener('click', function(e) {
+                e.preventDefault(); e.stopPropagation();
+                accountDropdown.classList.toggle('active');
+            });
+            document.addEventListener('click', function() {
+                dropdowns.forEach(d => d.classList.remove('active'));
+                accountDropdown.classList.remove('active');
+            });
+            document.querySelectorAll('.dropdown-menu, .account-menu').forEach(menu => {
+                menu.addEventListener('click', e => e.stopPropagation());
+            });
+
+            // --- KLANTEN LOGICA ---
+
+            // 1. Data Opslaan
+            function saveKlanten() {
+                localStorage.setItem(localStorageKey, JSON.stringify(klantenData));
+            }
+
+            // 2. Data Laden
+            async function laadKlanten() {
+                const opgeslagenData = localStorage.getItem(localStorageKey);
+                let dataGeldig = false;
+
+                if (opgeslagenData) {
+                    try {
+                        klantenData = JSON.parse(opgeslagenData);
+                        if (klantenData.length > 0 && klantenData[0].hasOwnProperty('klantNaam')) {
+                            dataGeldig = true;
+                        } else if (klantenData.length === 0) {
+                            dataGeldig = true;
+                        }
+                    } catch (e) {
+                        dataGeldig = false; // Corrupte JSON
+                    }
+                }
+
+                if (!dataGeldig) {
+                    console.log("Geen (of ongeldige) localStorage data, laden uit klanten.json...");
+                    try {
+                        // **BELANGRIJKE UPDATE: pad is nu ../klanten.json**
+                        const response = await fetch('../klanten.json'); 
+                        if (!response.ok) throw new Error('Kon klanten.json niet laden');
+                        klantenData = await response.json();
+                        saveKlanten(); 
+                    } catch (error) {
+                        console.error('Fout bij laden:', error);
+                        tabelBody.innerHTML = `<tr><td colspan="6">Kon data niet laden.</td></tr>`;
+                    }
+                }
+                
+                renderTabel();
+            }
+
+            // 3. Tabel Tekenen (AANGEPAST met iconen en nieuwe kolommen)
+            function renderTabel() {
+                tabelBody.innerHTML = ''; 
+                
+                if (klantenData.length === 0) {
+                     tabelBody.innerHTML = `<tr><td colspan="6">Geen klanten gevonden.</td></tr>`;
+                     return;
+                }
+
+                klantenData.forEach(klant => {
+                    const tr = document.createElement('tr');
+                    // Toon de nieuwe velden en iconen
+                    tr.innerHTML = `
+                        <td data-label="Klant naam">${klant.klantNaam || '-'}</td>
+                        <td data-label="Partner/Manager">${klant.partnerManager || '-'}</td>
+                        <td data-label="Budget">${formatCurrency(klant.budget)}</td>
+                        <td data-label="Startdatum">${formatDate(klant.startdatum)}</td>
+                        <td data-label="Einddatum">${formatDate(klant.einddatum)}</td>
+                        <td data-label="Acties">
+                            <button class="btn btn-icon btn-secondary btn-edit" data-id="${klant.id}" title="Bewerken">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                            </button>
+                            <button class="btn btn-icon btn-danger btn-delete" data-id="${klant.id}" title="Verwijderen">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                            </button>
+                        </td>
+                    `;
+                    tabelBody.appendChild(tr);
+                });
+
+                koppelTabelActies();
+            }
+
+            // 4. Koppel Acties
+            function koppelTabelActies() {
+                document.querySelectorAll('.btn-delete').forEach(knop => {
+                    knop.addEventListener('click', (e) => {
+                        // Gebruik currentTarget om zeker te zijn dat we de knop hebben, zelfs als op SVG wordt geklikt
+                        const id = e.currentTarget.dataset.id;
+                        handleDelete(id);
+                    });
+                });
+                
+                document.querySelectorAll('.btn-edit').forEach(knop => {
+                    knop.addEventListener('click', (e) => {
+                        const id = e.currentTarget.dataset.id;
+                        handleEdit(id);
+                    });
+                });
+            }
+
+            // 5. Modal Functies
+            function openModal() { modal.style.display = 'flex'; }
+            function closeModal() { 
+                modal.style.display = 'none'; 
+                klantForm.reset();
+                klantIdInput.value = '';
+            }
+
+            // 6. Event Handlers
+            
+            // Klik op "Nieuwe klant"
+            addKlantBtn.addEventListener('click', () => {
+                modalTitle.textContent = 'Klant Toevoegen';
+                modalSaveBtn.textContent = 'Toevoegen Klant';
+                klantForm.reset();
+                klantIdInput.value = '';
+                openModal();
+            });
+
+            // Klik op "Bewerken"
+            function handleEdit(id) {
+                const klant = klantenData.find(k => k.id == id);
+                if (!klant) return;
+
+                modalTitle.textContent = 'Klant Bewerken';
+                modalSaveBtn.textContent = 'Wijzigingen Opslaan';
+                
+                klantIdInput.value = klant.id;
+                klantNaamInput.value = klant.klantNaam || '';
+                klantBoekjaarInput.value = klant.boekjaar || '';
+                klantBudgetInput.value = klant.budget || '';
+                klantPartnerInput.value = klant.partnerManager || '';
+                klantVerantwoordelijkInput.value = klant.verantwoordelijkTeam || '';
+                klantPlanbaarInput.value = klant.planbaarDoorTeams || '';
+                klantStartdatumInput.value = klant.startdatum || '';
+                klantEinddatumInput.value = klant.einddatum || '';
+                
+                openModal();
+            }
+
+            // Klik op "Verwijderen"
+            function handleDelete(id) {
+                if (!confirm('Weet je zeker dat je deze klant wilt verwijderen?')) {
+                    return;
+                }
+                klantenData = klantenData.filter(klant => klant.id != id);
+                saveKlanten();
+                renderTabel();
+            }
+
+            // Formulier verzenden (Opslaan)
+            klantForm.addEventListener('submit', (e) => {
+                e.preventDefault(); 
+                
+                const id = klantIdInput.value;
+                const nieuweData = {
+                    klantNaam: klantNaamInput.value,
+                    boekjaar: klantBoekjaarInput.value,
+                    budget: klantBudgetInput.value,
+                    partnerManager: klantPartnerInput.value,
+                    verantwoordelijkTeam: klantVerantwoordelijkInput.value,
+                    planbaarDoorTeams: klantPlanbaarInput.value,
+                    startdatum: klantStartdatumInput.value,
+                    einddatum: klantEinddatumInput.value
+                };
+
+                if (id) {
+                    // Bewerken
+                    const index = klantenData.findIndex(k => k.id == id);
+                    if (index > -1) {
+                        klantenData[index] = { ...klantenData[index], ...nieuweData };
+                    }
+                } else {
+                    // Toevoegen
+                    nieuweData.id = Date.now();
+                    klantenData.push(nieuweData);
+                }
+
+                saveKlanten();
+                renderTabel();
+                closeModal();
+            });
+
+            // Modal sluiten/annuleren
+            modalCloseBtn.addEventListener('click', closeModal);
+            modalCancelBtn.addEventListener('click', closeModal);
+            window.addEventListener('click', (e) => {
+                if (e.target == modal) {
+                    closeModal();
+                }
+            });
+
+            // --- Start de applicatie ---
+            laadKlanten();
+        });
+    </script>
+</body>
+</html>
