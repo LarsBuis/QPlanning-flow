@@ -226,20 +226,7 @@ body {
     border: 1px solid #e0e0e0;
 }
 
-.content-container h2 {
-    color: #2c3e50;
-    margin-bottom: 16px;
-    font-size: 24px;
-    font-weight: 500;
-}
-
-.content-container p {
-    color: #666;
-    font-size: 16px;
-    line-height: 1.5;
-}
-
-/* Responsive design */
+/* Responsive design for Header/Base */
 @media (max-width: 768px) {
     .header-container {
         padding: 0 15px;
@@ -294,13 +281,13 @@ body {
     }
 }
 
-/* Clean transitions */
+/* Clean transitions for Header/Base */
 .dropdown-menu,
 .account-menu {
     transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
 }
 
-/* Focus styles for accessibility */
+/* Focus styles for accessibility for Header/Base */
 .nav-link:focus,
 .account-btn:focus,
 .dropdown-link:focus,
@@ -309,107 +296,451 @@ body {
     outline-offset: 2px;
 }
 
+
 /* ================================== */
-/* === Stijlen voor Klanten Pagina === */
+/* === BEGIN INGEVOEGDE STIJLEN === */
 /* ================================== */
 
-/* Header binnen de content (Titel + Knop) */
-.content-header {
+/* Page header styles */
+.page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
-    flex-wrap: wrap; /* Zorgt dat de knop onder de titel springt op kleine schermen */
-    gap: 15px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
 }
 
-/* Algemene knopstijlen */
+.page-header h2 {
+    color: #2c3e50;
+    font-size: 24px;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* Button styles */
 .btn {
-    padding: 10px 16px;
+    padding: 10px 20px;
     border: none;
     border-radius: 4px;
-    cursor: pointer;
     font-size: 14px;
     font-weight: 500;
-    transition: all 0.2s ease;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
     text-decoration: none;
     display: inline-block;
-    line-height: 1.2;
+    line-height: 1.2; /* Toegevoegd voor consistentie */
 }
 
-/* Primaire knop (passend bij header) */
 .btn-primary {
     background-color: #2c3e50;
     color: white;
 }
+
 .btn-primary:hover {
     background-color: #34495e;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* Secundaire knop (voor 'Bewerken') */
 .btn-secondary {
-    background-color: #f8f9fa;
+    background-color: #f5f5f5;
     color: #333;
     border: 1px solid #ddd;
 }
+
 .btn-secondary:hover {
-    background-color: #e9ecef;
+    background-color: #e9e9e9;
 }
 
-/* Gevaar knop (voor 'Verwijderen') */
-.btn-danger {
-    background-color: #e74c3c;
-    color: white;
-}
-.btn-danger:hover {
-    background-color: #c0392b;
+.btn-secondary:disabled {
+    background-color: #f9f9f9;
+    color: #999;
+    cursor: not-allowed;
 }
 
-/* Data Tabel Stijlen */
-.data-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+.btn-icon {
+    background: none;
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    border-radius: 4px;
+    color: #666;
+    transition: all 0.2s ease;
+    margin: 0 2px;
 }
 
-.data-table th,
-.data-table td {
-    border: 1px solid #e0e0e0;
-    padding: 12px 15px;
-    text-align: left;
-    vertical-align: middle;
-}
-
-.data-table th {
-    background-color: #f8f9fa; /* Lichte header */
+.btn-icon:hover {
+    background-color: #f5f5f5;
     color: #2c3e50;
-    font-weight: 600;
+}
+
+/* Filters section */
+.filters-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+}
+
+.search-box {
+    position: relative;
+    flex: 1;
+    max-width: 300px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 35px 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #2c3e50;
+}
+
+.search-clear {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #999;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.search-clear:hover {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.filter-options {
+    display: flex;
+    gap: 10px;
+}
+
+.filter-select {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: white;
+    cursor: pointer;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #2c3e50;
+}
+
+/* Bulk actions bar */
+.bulk-actions-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #e3f2fd;
+    border: 1px solid #bbdefb;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    animation: slideDown 0.3s ease;
+}
+
+.bulk-info {
+    font-weight: 500;
+    color: #1976d2;
+}
+
+.bulk-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Table improvements */
+.select-column {
+    width: 40px;
+    text-align: center;
+}
+
+.select-checkbox {
+    cursor: pointer;
+    transform: scale(1.2);
+}
+
+.row-checkbox {
+    cursor: pointer;
+    transform: scale(1.1);
+}
+
+/* Loading overlay */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #2c3e50;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-text {
+    margin-top: 15px;
+    color: #666;
     font-size: 14px;
 }
 
-.data-table tbody tr:nth-child(even) {
-    background-color: #fdfdfd;
+/* No results */
+.no-results {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    margin: 20px 0;
+}
+
+.no-results-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.no-results h3 {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.no-results p {
+    color: #999;
+    margin-bottom: 20px;
+}
+
+/* Confirmation modal */
+.confirm-modal-content {
+    max-width: 400px;
+}
+
+.confirm-icon {
+    font-size: 48px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.confirm-details {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 15px;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Notifications */
+.success-notification,
+.info-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 8px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 3px 10px rgba(0, 0, 0, 0.1);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    z-index: 2000;
+    animation: slideInRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    max-width: 420px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.success-notification {
+    border-left: 4px solid #28a745;
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    border: 1px solid #c3e6cb;
+}
+
+.info-notification {
+    border-left: 4px solid #17a2b8;
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    border: 1px solid #bee5eb;
+}
+
+.success-icon {
+    flex-shrink: 0;
+    color: #28a745;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    border: 2px solid rgba(40, 167, 69, 0.2);
+}
+
+.success-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.info-icon {
+    flex-shrink: 0;
+    color: #17a2b8;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    border: 2px solid rgba(23, 162, 184, 0.2);
+}
+
+.info-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.success-message,
+.info-message {
+    flex: 1;
+    font-size: 15px;
+    color: #2c3e50;
+    font-weight: 600;
+    line-height: 1.4;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.success-close,
+.info-close {
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(108, 117, 125, 0.2);
+}
+
+.success-close svg,
+.info-close svg {
+    width: 16px;
+    height: 16px;
+}
+
+.success-close:hover,
+.info-close:hover {
+    background: rgba(255, 255, 255, 1);
+    color: #495057;
+    transform: scale(1.15) rotate(90deg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border-color: rgba(108, 117, 125, 0.4);
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Table styles */
+.table-container {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.data-table thead {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.data-table th {
+    padding: 15px 12px;
+    text-align: left;
+    font-weight: 500;
+    color: #2c3e50;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.data-table td {
+    padding: 15px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333;
+    vertical-align: middle; /* Verbeterde uitlijning */
 }
 
 .data-table tbody tr:hover {
-    background-color: #f5f5f5;
+    background-color: #f8f9fa;
 }
 
-/* Actie knoppen in de tabel */
-.data-table td[data-label="Acties"] {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-.data-table .btn {
-    padding: 6px 10px;
-    font-size: 13px;
+.data-table tbody tr:last-child td {
+    border-bottom: none;
 }
 
-/* Responsive tabel aanpassingen */
+/* Responsive tabel aanpassingen (basis) */
 @media (max-width: 768px) {
-    /* Verberg de tabel headers */
     .data-table thead {
         display: none;
     }
@@ -430,169 +761,602 @@ body {
         padding: 10px 15px;
         border: none;
         border-bottom: 1px solid #f0f0f0;
-        text-align: right; /* Zorgt dat de waarde rechts staat */
+        text-align: right;
     }
     
     .data-table td:last-child {
         border-bottom: none;
     }
 
-    /* Voeg het 'data-label' toe als pseudo-element */
     .data-table td::before {
         content: attr(data-label);
         font-weight: 600;
         color: #333;
         margin-right: 15px;
-        text-align: left; /* Zorgt dat het label links staat */
+        text-align: left;
     }
     
-    /* Zorg dat de actieknoppen netjes staan */
-    .data-table td[data-label="Acties"] {
-        justify-content: flex-end; /* Knoppen rechts uitlijnen */
+    .data-table td.actions {
+        justify-content: flex-end;
     }
-    .data-table td[data-label="Acties"]::before {
-        align-self: center; /* Label centreren met de knoppen */
+    .data-table td.actions::before {
+        align-self: center;
     }
 }
 
-/* ================================== */
-/* === Stijlen voor Modal/Formulier === */
-/* ================================== */
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
 
-/* De modal achtergrond (overlay) */
+.status-active {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-inactive {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.status-yes {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-no {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Actions column */
+.actions {
+    white-space: nowrap;
+    text-align: right; /* Knoppen rechts uitlijnen */
+}
+
+.action-buttons {
+    display: inline-flex; /* Knoppen naast elkaar */
+    flex-direction: row; /* Standaard al, maar expliciet */
+    gap: 8px;
+}
+
+/* Responsive Actions */
+@media (max-width: 768px) {
+    .action-buttons {
+        flex-direction: row; /* Blijven naast elkaar */
+        justify-content: flex-end; /* Rechts uitlijnen in flex container */
+        width: 100%; /* Zodat justify werkt */
+    }
+}
+
+.btn-action {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px; /* Aangepast */
+    background: none;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #333;
+    font-size: 12px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    min-width: auto; /* Aangepast voor flexibiliteit */
+    justify-content: center; /* Icoon en tekst centreren */
+}
+
+.btn-action:hover {
+    background-color: #f5f5f5;
+    border-color: #2c3e50;
+    color: #2c3e50;
+}
+
+.btn-action svg {
+    flex-shrink: 0;
+}
+
+/* Specifieke knop kleuren (optioneel) */
+.btn-action.btn-warning { border-color: #ffc107; color: #ffc107; }
+.btn-action.btn-warning:hover { background-color: #fff3cd; color: #856404; border-color: #ffeeba; }
+.btn-action.btn-success { border-color: #28a745; color: #28a745; }
+.btn-action.btn-success:hover { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
+.btn-action.btn-danger { border-color: #dc3545; color: #dc3545; } /* Toegevoegd voor delete */
+.btn-action.btn-danger:hover { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; } /* Toegevoegd voor delete */
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.page-info {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Modal styles */
 .modal {
-    display: none; /* <-- DEZE IS NU CORRECT INGESTELD OP 'none' */
+    display: none; /* Blijft 'none', wordt 'flex' via JS */
     position: fixed;
     z-index: 2000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto; /* Scrollen als de modal te hoog is */
-    background-color: rgba(0, 0, 0, 0.4); /* Zwarte overlay */
+    background-color: rgba(0, 0, 0, 0.5);
     
     /* Toegevoegd voor centreren: */
-    /* display: flex; <-- Wordt 'flex' via JavaScript */
-    align-items: center; /* Verticaal centreren */
-    justify-content: center; /* Horizontaal centreren */
+    align-items: center;
+    justify-content: center;
+    overflow: auto; /* Scrollen als modal te groot is */
 }
 
-/* De modal content (de witte box) */
+/* Form info styles */
+.form-info {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    padding: 8px 20px;
+    text-align: right;
+}
+
+.form-info small {
+    color: #6c757d;
+    font-size: 12px;
+}
+
 .modal-content {
-    background-color: #fff;
-    padding: 25px 30px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    position: relative;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    
-    /* Aangepast voor breedte en centreren */
-    margin: 20px; /* Ruimte vanaf de schermranden */
+    background-color: white;
+    margin: 20px; /* Biedt ruimte op alle schermen */
+    border-radius: 4px;
     width: 90%;
-    max-width: 700px; /* Breder gemaakt voor 2-kolom layout */
+    max-width: 500px; /* Kan aangepast worden indien nodig */
+    max-height: 90vh; /* Voorkomt dat modal te hoog wordt */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
 }
 
-/* De sluitknop (X) */
-.modal-close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    line-height: 1;
-    cursor: pointer;
-}
-.modal-close:hover,
-.modal-close:focus {
-    color: #333;
-    text-decoration: none;
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
 }
 
-.modal-content h3 {
+.modal-header h3 {
+    margin: 0;
     color: #2c3e50;
-    margin-top: 0;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    color: #333;
+}
+
+.modal-body {
+    padding: 20px;
+    overflow-y: auto; /* Scrollen als formulier lang is */
+    flex: 1; /* Zorgt dat body meegroeit */
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 20px;
+    border-top: 1px solid #e0e0e0;
+    background-color: #f8f9fa;
+}
+
+/* Form styles */
+.form-row {
+    display: flex;
+    gap: 15px;
     margin-bottom: 20px;
-    font-weight: 600;
 }
 
-/* Layout voor 2 kolommen */
-.form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* 2 gelijke kolommen */
-    gap: 0 20px; /* Alleen ruimte TUSSEN kolommen */
+.form-row .form-group {
+    flex: 1;
+    margin-bottom: 0;
 }
 
-/* Veld dat de volle breedte pakt */
-.form-group.full-width {
-    grid-column: 1 / -1; /* Overspant beide kolommen */
-}
-
-/* Formulier stijlen */
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
+
 .form-group label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
+    color: #333;
     font-weight: 500;
     font-size: 14px;
-    color: #555;
 }
 
-/* Standaardiseer alle invoervelden */
-.form-group input[type="text"],
-.form-group input[type="email"],
-.form-group input[type="tel"],
-.form-group input[type="number"],
-.form-group input[type="date"],
+.form-group input,
 .form-group select {
     width: 100%;
-    padding: 10px;
-    font-size: 15px;
-    border: 1px solid #ccc;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
     border-radius: 4px;
-    box-sizing: border-box; 
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: white; /* Zorgt voor witte achtergrond op date/select */
+    font-size: 14px;
+    transition: border-color 0.2s ease;
 }
 
-/* Nette placeholder voor 'verplichte' dropdowns */
-.form-group select:required:invalid {
-    color: #888;
-}
-.form-group select option {
-    color: #333;
-}
-
-/* Focus stijl */
 .form-group input:focus,
 .form-group select:focus {
-    border-color: #2c3e50;
     outline: none;
-    box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.1);
+    border-color: #2c3e50;
 }
 
-/* Knoppen onderaan formulier */
-.form-actions {
-    margin-top: 25px;
-    display: flex;
-    justify-content: flex-end; /* Knoppen rechts uitlijnen */
-    gap: 10px;
+/* Input dropdown styling */
+.input-dropdown-container {
+    position: relative;
+    width: 100%;
 }
 
-/* Aanpassing knop 'Sluiten' (secundair) */
-.form-actions .btn-secondary {
-    background-color: #f8f9fa;
-    color: #333;
+.dropdown-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
     border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: none;
+    max-height: 200px;
+    overflow-y: auto;
 }
-.form-actions .btn-secondary:hover {
+
+.suggestion-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+    color: #333;
+    transition: all 0.2s ease;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover,
+.suggestion-item.highlighted {
+    background-color: #f8f9fa;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.suggestion-item:active {
     background-color: #e9ecef;
 }
 
-/* Responsive: 1 kolom op kleine schermen */
-@media (max-width: 480px) {
-    .form-grid {
-        grid-template-columns: 1fr; /* 1 kolom op mobiel */
+.input-dropdown-container input {
+    border-radius: 4px 4px 0 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.input-dropdown-container input:focus {
+    border-radius: 4px 4px 0 0;
+    border-bottom: 1px solid #2c3e50;
+}
+
+.dropdown-suggestions::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dropdown-suggestions::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.dropdown-suggestions::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.dropdown-suggestions::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Toggle switch styling */
+.toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 5px;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background-color: #2c3e50;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+}
+
+.toggle-switch:hover .toggle-slider {
+    box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.2);
+}
+
+.toggle-switch input:focus + .toggle-slider {
+    box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.3);
+}
+
+.toggle-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    user-select: none;
+}
+
+.toggle-switch input:checked ~ .toggle-label {
+    color: #2c3e50;
+}
+
+/* Error state for toggle */
+.form-group .toggle-switch input.error + .toggle-slider {
+    background-color: #dc3545;
+}
+
+.form-group .toggle-switch input.error:checked + .toggle-slider {
+    background-color: #dc3545;
+}
+
+/* Error handling styles */
+.error-message {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 4px;
+    display: none;
+}
+
+.error-message.show {
+    display: block;
+}
+
+.form-group input.error,
+.form-group select.error {
+    border-color: #dc3545;
+    background-color: #fff5f5;
+}
+
+.form-group input.error:focus,
+.form-group select.error:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
+}
+
+/* Success state for valid fields */
+.form-group input.success,
+.form-group select.success {
+    border-color: #28a745;
+    background-color: #f8fff9;
+}
+
+.form-group input.success:focus,
+.form-group select.success:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
+}
+
+.help-text {
+    color: #6c757d;
+    font-size: 12px;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+/* Error popup modal */
+.error-modal-content {
+    max-width: 400px;
+    max-height: 80vh;
+}
+
+.error-modal-content .modal-header h3 {
+    color: #dc3545;
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.error-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.error-item {
+    color: #721c24;
+    font-size: 14px;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    background-color: #f8d7da;
+    border-radius: 4px;
+    border-left: 3px solid #dc3545;
+}
+
+/* Loading state */
+.btn-primary:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+.btn-primary.loading {
+    position: relative;
+    color: transparent;
+}
+
+.btn-primary.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ffffff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Responsive design for components */
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .filters-section {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+
+    .search-box {
+        max-width: none;
+    }
+
+    .filter-options {
+        flex-direction: column;
+    }
+
+    /* .data-table font-size is already handled in base responsive */
+    /* .data-table th, td padding is already handled in base responsive */
+
+    .modal-content {
+        /* Keep margin: 20px from base modal style */
+        width: 95%; /* Adjust width for small screens */
+    }
+
+    .modal-footer {
+        flex-direction: column;
+    }
+
+    .modal-footer .btn {
+        width: 100%;
+    }
+
+    .form-row {
+        flex-direction: column;
         gap: 0;
     }
+
+    .form-row .form-group {
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .data-table {
+        min-width: 600px;
+    }
+
+    .pagination {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/* Focus styles for accessibility */
+.btn:focus,
+.btn-icon:focus,
+.search-input:focus,
+.filter-select:focus,
+.modal-close:focus {
+    outline: 2px solid #2c3e50;
+    outline-offset: 2px;
+}
+
+/* Loading states */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Hover effects */
+/* .data-table tbody tr hover is already handled */
+
+/* .btn transition is already handled */
+
+/* Clean transitions */
+.modal {
+    transition: opacity 0.2s ease;
+}
+
+.modal-content {
+    transition: transform 0.2s ease;
 }
