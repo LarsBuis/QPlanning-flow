@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QPlanning</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <!-- Logo and main navigation -->
+            <div class="header-left">
+                <div class="logo">
+                    <h1>QPlanning</h1>
+                </div>
+                <nav class="main-nav">
+                    <ul class="nav-list">
+                        <li><a href="#" class="nav-link active">Overzicht</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="nav-link dropdown-toggle">Plannen</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#" class="dropdown-link">Boekingen</a></li>
+                                <li><a href="#" class="dropdown-link">Klantenplanning</a></li>
+                                <li><a href="#" class="dropdown-link">Medewerkerplanning</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="nav-link dropdown-toggle">Beheer</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#" class="dropdown-link">Klanten beheren</a></li>
+                                <li><a href="#" class="dropdown-link">Medewerkers beheren</a></li>
+                                <li><a href="#" class="dropdown-link">Gebruikers beheren</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            
+            <!-- Account section -->
+            <div class="header-right">
+                <div class="account-dropdown">
+                    <button class="account-btn" id="accountBtn">
+                        <svg class="account-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </button>
+                    <ul class="account-menu" id="accountMenu">
+                        <li><a href="#" class="account-link">Wijzig wachtwoord</a></li>
+                        <li><a href="#" class="account-link">Log uit</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="content-container">
+            <h2>Welkom bij QPlanning</h2>
+            <p>Dit is de hoofdpagina van het QPlanning systeem.</p>
+        </div>
+    </main>
+
+    <script>
+        // Dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdowns = document.querySelectorAll('.dropdown');
+            const accountBtn = document.getElementById('accountBtn');
+            const accountMenu = document.getElementById('accountMenu');
+
+            // Handle main navigation dropdowns
+            dropdowns.forEach(dropdown => {
+                const toggle = dropdown.querySelector('.dropdown-toggle');
+                const menu = dropdown.querySelector('.dropdown-menu');
+
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Close other dropdowns
+                    dropdowns.forEach(otherDropdown => {
+                        if (otherDropdown !== dropdown) {
+                            otherDropdown.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle current dropdown
+                    dropdown.classList.toggle('active');
+                });
+            });
+
+            // Handle account dropdown
+            const accountDropdown = document.querySelector('.account-dropdown');
+            accountBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                accountDropdown.classList.toggle('active');
+            });
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function() {
+                dropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+                accountDropdown.classList.remove('active');
+            });
+
+            // Prevent dropdown menus from closing when clicking inside them
+            document.querySelectorAll('.dropdown-menu, .account-menu').forEach(menu => {
+                menu.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
