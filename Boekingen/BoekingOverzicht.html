@@ -3,45 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QPlanning</title>
-    <link rel="stylesheet" href="../styles.css">
+    <title>Medewerkerbeheer - QPlanning</title>
+    <link rel="stylesheet" href="/styles.css">
 </head>
-
 <body>
-    <div id="header-container"></div>
+    <header class="header">
+        <div class="header-container">
+            <!-- Logo and main navigation -->
+            <div class="header-left">
+                <div class="logo">
+                    <h1>QPlanning</h1>
+                </div>
+                <nav class="main-nav">
+                    <ul class="nav-list">
+                        <li><a href="/index.html" class="nav-link active">Overzicht</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="nav-link dropdown-toggle">Plannen</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/Boekingen/BoekingOverzicht.html" class="dropdown-link">Boekingen</a></li>
+                                <li><a href="#" class="dropdown-link">Klantenplanning</a></li>
+                                <li><a href="#" class="dropdown-link">Medewerkerplanning</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="nav-link dropdown-toggle">Beheer</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/klanten/klant.html" class="dropdown-link">Klanten beheren</a></li>
+                                <li><a href="/Medewerker/medewerkerbeheer.html" class="dropdown-link">Medewerkers beheren</a></li>
+                                <li><a href="#" class="dropdown-link">Gebruikers beheren</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            
+            <!-- Account section -->
+            <div class="header-right">
+                <div class="account-dropdown">
+                    <button class="account-btn" id="accountBtn">
+                        <svg class="account-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </button>
+                    <ul class="account-menu" id="accountMenu">
+                        <li><a href="#" class="account-link">Wijzig wachtwoord</a></li>
+                        <li><a href="#" class="account-link">Log uit</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
 
     <main class="main-content">
         <div class="content-container">
             <div class="page-header">
                 <h2>Boeking overzicht</h2>
-                <button class="btn btn-primary" id="add-boeking-btn">Nieuwe boeking toevoegen</button>
+                <button class="btn btn-primary" id="addEmployeeBtn">Nieuwe boeking toevoegen</button>
             </div>
 
             <div class="filters-section">
                 <div class="search-box">
                     <input type="text" id="searchInput" placeholder="Zoek boekingen..." class="search-input">
-                    <button class="search-clear" id="clearSearch" title="Zoekopdracht wissen" style="display: none;">×</button>
+                    <button class="search-clear" id="clearSearch" title="Zoekopdracht wissen">×</button>
                 </div>
                 <div class="filter-options">
-                    <select id="partnerFilter" class="filter-select">
-                        <option value="">Opdracht</option>
-                        </select>
+                    <select id="geboektFilter" class="filter-select">
+                        <option value="">Geboekt op</option>
+                        <option value="actief">Actief</option>
+                        <option value="inactief">Inactief</option>
+                    </select>
+                    <select id="medewerkerFilter" class="filter-select">
+                        <option value="">Alle medewerkers</option>
+                        <option value="ja">Planbaar</option>
+                        <option value="nee">Niet planbaar</option>
+                    </select>
+                    <select id="functieFilter" class="filter-select">
+                        <option value="">Alle functies</option>
+                        <option value="verkoop">Verkoop</option>
+                        <option value="support">Support</option>
+                        <option value="administratie">Administratie</option>
+                    </select>
                     <select id="teamFilter" class="filter-select">
-                        <option value="">Medewerker</option>
-                        </select>
-                    <select id="teamFilter" class="filter-select">
-                        <option value="">Functie</option>
-                        </select>
-                    <select id="teamFilter" class="filter-select">
-                        <option value="">Teams</option>
-                        </select>
+                        <option value="">Alle teams</option>
+                        <option value="verkoop">Verkoop</option>
+                        <option value="support">Support</option>
+                        <option value="administratie">Administratie</option>
+                    </select>
                     <button class="btn btn-secondary" id="clearFilters">Filters wissen</button>
                 </div>
             </div>
 
+            <!-- Bulk actions bar -->
             <div class="bulk-actions-bar" id="bulkActionsBar" style="display: none;">
+                <div class="bulk-info">
+                    <span id="selectedCount">0</span> medewerkers geselecteerd
+                </div>
                 <div class="bulk-buttons">
+                    <button class="btn btn-secondary" id="bulkActivate">Activeren</button>
                     <button class="btn btn-secondary" id="bulkDelete">Verwijderen</button>
+                    <button class="btn btn-secondary" id="bulkExport">Exporteren</button>
                 </div>
             </div>
 
@@ -60,94 +121,140 @@
                             <th>Acties</th>
                         </tr>
                     </thead>
-                    <tbody id="klanten-tabel-body">
-                        </tbody>
+                    
                 </table>
             </div>
 
+            <!-- Loading overlay -->
+            <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Laden...</div>
+            </div>
+
+            <!-- No results message -->
             <div class="no-results" id="noResults" style="display: none;">
                 <div class="no-results-icon">🔍</div>
-                <h3>Geen klanten gevonden</h3>
+                <h3>Geen medewerkers gevonden</h3>
                 <p>Probeer andere zoektermen of filters.</p>
                 <button class="btn btn-primary" id="clearAllFilters">Alle filters wissen</button>
+            </div>
+
+            <div class="pagination">
+                <button class="btn btn-secondary" id="prevPage" disabled>Vorige</button>
+                <span class="page-info" id="pageInfo">Pagina 1 van 1</span>
+                <button class="btn btn-secondary" id="nextPage" disabled>Volgende</button>
             </div>
         </div>
     </main>
 
-    <div class="modal" id="klant-modal">
+    <!-- Modal for adding/editing booking -->
+    <div class="modal" id="boekingModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modal-title">Nieuwe klant</h3>
-                <button class="modal-close" id="closeModal">&times;</button>
+            <h3 id="modalTitle">Nieuwe boeking</h3>
+            <button class="modal-close" id="closeModal">&times;</button>
             </div>
+
             <div class="form-info">
-                <small>* Verplichte velden</small>
+            <small>Alle velden zijn verplicht om in te vullen</small>
             </div>
-            <form id="klant-form" class="modal-body" novalidate>
-                <input type="hidden" id="klant-id">
-                
-                <div class="form-group">
-                    <label for="klant-naam">Klant naam *</label>
-                    <input type="text" id="klant-naam" name="klantNaam" placeholder="Bijv. Groot Bedrijf BV" required>
-                    <div class="error-message" id="klantNaamError"></div>
-                </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="klant-boekjaar">Boekjaar</label>
-                        <input type="text" id="klant-boekjaar" name="boekjaar" maxlength="4" placeholder="2025">
-                    </div>
-                    <div class="form-group">
-                        <label for="klant-budget">Budget (€) *</label>
-                        <input type="number" id="klant-budget" name="budget" placeholder="Bijv. 10000" required step="0.01" min="0">
-                        <div class="error-message" id="budgetError"></div>
-                    </div>
+            <form id="boekingForm" class="modal-body" novalidate>
+            <div class="form-row">
+                <div class="form-group">
+                <label for="hours">Uren</label>
+                <input type="text" id="hours" name="hours" maxlength="20">
+                <div class="error-message" id="hoursError"></div>
                 </div>
 
                 <div class="form-group">
-                    <label for="klant-partner">Partner/Manager *</label>
-                    <select id="klant-partner" name="partnerManager" required>
-                        <option value="" disabled selected>Selecteer...</option>
-                        <option value="Jan Jansen">Jan Jansen</option>
-                        <option value="Marieke de Vries">Marieke de Vries</option>
-                        <option value="Pieter Smit">Pieter Smit</option>
-                    </select>
-                    <div class="error-message" id="partnerManagerError"></div>
+                <label for="weekNumber">Week nr.</label>
+                <input type="text" id="weekNumber" name="weekNumber" maxlength="20" placeholder="Bijv. 12">
+                <div class="error-message" id="weekNumberError"></div>
                 </div>
 
                 <div class="form-group">
-                    <label for="klant-verantwoordelijk">Verantwoordelijk team</label>
-                    <select id="klant-verantwoordelijk" name="verantwoordelijkTeam">
-                        <option value="">Selecteer...</option>
-                        <option value="Team Audit A">Team Audit A</option>
-                        <option value="Team Accountancy">Team Accountancy</option>
-                        <option value="Team Advies">Team Advies</option>
-                    </select>
+                <label for="year">Jaar</label>
+                <input type="text" id="year" name="year" maxlength="20" placeholder="Bijv. 2023">
+                <div class="error-message" id="yearError"></div>
                 </div>
 
                 <div class="form-group">
-                    <label for="klant-planbaar">Planbaar door teams</label>
-                    <input type="text" id="klant-planbaar" name="planbaarDoorTeams" placeholder="Bijv. Team Audit A, Team Audit B">
+                <label for="planbaar">Plan datum</label>
+                <input type="text" id="planbaar" name="planbaar" maxlength="20" placeholder="Bijv. 12-03-2023">
+                <div class="error-message" id="planbaarError"></div>
                 </div>
+            </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="klant-startdatum">Startdatum</label>
-                        <input type="date" id="klant-startdatum" name="startdatum">
-                    </div>
-                    <div class="form-group">
-                        <label for="klant-einddatum">Einddatum</label>
-                        <input type="date" id="klant-einddatum" name="einddatum">
-                    </div>
+            <!-- Medewerker -->
+            <div class="form-group">
+                <label for="medewerker">Medewerker</label>
+                <div class="input-dropdown-container">
+                <input type="text" id="medewerker" placeholder="Typ om te zoeken..." autocomplete="off">
+                <div class="dropdown-suggestions" id="medewerkerDropdown">
+                    <div class="suggestion-item">Jan Jansen</div>
+                    <div class="suggestion-item">Piet Pieters</div>
+                    <div class="suggestion-item">Lisa Vermeer</div>
+                    <div class="suggestion-item">Karel de Boer</div>
+                    <div class="suggestion-item">Sanne de Groot</div>
                 </div>
+                </div>
+                <div class="error-message" id="employeeError"></div>
+            </div>
+
+            <!-- Klant -->
+            <div class="form-group">
+                <label for="klant">Klant</label>
+                <div class="input-dropdown-container">
+                <input type="text" id="klant" placeholder="Typ om te zoeken..." autocomplete="off">
+                <div class="dropdown-suggestions" id="klantDropdown">
+                    <div class="suggestion-item">QCompany</div>
+                    <div class="suggestion-item">TechNova</div>
+                    <div class="suggestion-item">DataSoft</div>
+                    <div class="suggestion-item">NextIT</div>
+                    <div class="suggestion-item">GreenWorks</div>
+                </div>
+                </div>
+                <div class="error-message" id="customerError"></div>
+            </div>
+
+            <!-- Indirecte uren -->
+            <div class="form-group">
+                <label for="indirecteUren">Indirecte uren</label>
+                <select id="indirecteUren" name="indirecteUren">
+                <option value="">Selecteer een optie</option>
+                <option value="Verlof">Verlof</option>
+                <option value="Ziekte">Ziekte</option>
+                <option value="Training">Training</option>
+                <option value="Overleg">Overleg</option>
+                </select>
+                <div class="error-message" id="indirecteurenError"></div>
+            </div>
+
+            <!-- Opdracht -->
+            <div class="form-group">
+                <label for="opdracht">Opdracht</label>
+                <select id="opdracht" name="opdracht">
+                <option value="">Selecteer een opdracht</option>
+                <option value="Verkoop">Verkoop</option>
+                <option value="Support">Support</option>
+                <option value="Administratie">Administratie</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Development">Development</option>
+                <option value="HR">HR</option>
+                </select>
+                <div class="error-message" id="opdrachtError"></div>
+            </div>
             </form>
+
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="cancelBtn">Annuleren</button>
-                <button type="submit" class="btn btn-primary" form="klant-form" id="modal-save-btn">Opslaan</button>
+            <button type="button" class="btn btn-secondary" id="cancelBtn">Annuleren</button>
+            <button type="submit" class="btn btn-primary" form="boekingForm">Opslaan</button>
             </div>
         </div>
-    </div>
+        </div>
 
+    <!-- Error popup modal -->
     <div class="modal" id="errorModal">
         <div class="modal-content error-modal-content">
             <div class="modal-header">
@@ -156,7 +263,8 @@
             </div>
             <div class="modal-body">
                 <div class="error-list" id="errorList">
-                    </div>
+                    <!-- Errors will be populated here -->
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="closeErrorBtn">OK</button>
@@ -164,6 +272,7 @@
         </div>
     </div>
 
+    <!-- Confirmation modal -->
     <div class="modal" id="confirmModal">
         <div class="modal-content confirm-modal-content">
             <div class="modal-header">
@@ -173,7 +282,7 @@
             <div class="modal-body">
                 <div class="confirm-icon" id="confirmIcon">⚠️</div>
                 <p id="confirmMessage">Weet je zeker dat je deze actie wilt uitvoeren?</p>
-                <div class="confirm-details" id="confirmDetails" style="display: none;"></div>
+                <div class="confirm-details" id="confirmDetails"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" id="cancelConfirmBtn">Annuleren</button>
@@ -182,10 +291,12 @@
         </div>
     </div>
 
+    <!-- Success notification -->
     <div class="success-notification" id="successNotification" style="display: none;">
         <div class="success-icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                <path d="M9 12l2 2 4-4"></path><circle cx="12" cy="12" r="10"></circle>
+                <path d="M9 12l2 2 4-4"></path>
+                <circle cx="12" cy="12" r="10"></circle>
             </svg>
         </div>
         <div class="success-message" id="successMessage">Actie succesvol uitgevoerd</div>
@@ -196,525 +307,402 @@
         </button>
     </div>
 
+    <!-- Info notification -->
+    <div class="info-notification" id="infoNotification" style="display: none;">
+        <div class="info-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 16v-4M12 8h.01"></path>
+            </svg>
+        </div>
+        <div class="info-message" id="infoMessage">Informatie</div>
+        <button class="info-close" id="closeInfoNotification">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"></path>
+            </svg>
+        </button>
+    </div>
 
     <script>
-        // --- Helper Functies ---
-        function formatCurrency(value) {
-            if (value === null || value === undefined || value === '') return '-';
-            try {
-                const number = parseFloat(value);
-                if (isNaN(number)) return '-';
-                return '€ ' + number.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            } catch (e) {
-                return '-';
-            }
+document.addEventListener("DOMContentLoaded", () => {
+
+    // ====== ELEMENTEN ======
+    const boekingModal = document.getElementById("boekingModal");
+    const addEmployeeBtn = document.getElementById("addEmployeeBtn");
+    const closeModalBtn = document.getElementById("closeModal");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const boekingForm = document.getElementById("boekingForm");
+    const planDatumInput = document.getElementById("planbaar");
+    const weekInput = document.getElementById("weekNumber");
+    const yearInput = document.getElementById("year");
+    const tableBody = document.querySelector(".data-table tbody") || document.createElement("tbody");
+
+    document.querySelector(".data-table").appendChild(tableBody);
+
+    let editingId = null;
+
+    // ====== LOCALSTORAGE FUNCTIONALITY ======
+    function getBookings() {
+        const bookings = localStorage.getItem('bookings');
+        return bookings ? JSON.parse(bookings) : [];
+    }
+
+    function saveBookings(bookings) {
+        localStorage.setItem('bookings', JSON.stringify(bookings));
+    }
+
+    function getNextId() {
+        const bookings = getBookings();
+        return bookings.length > 0 ? Math.max(...bookings.map(b => b.id)) + 1 : 1;
+    }
+
+    function addBooking(data) {
+        const bookings = getBookings();
+        const newBooking = { id: getNextId(), ...data, status: 'actief' };
+        bookings.push(newBooking);
+        saveBookings(bookings);
+        return newBooking;
+    }
+
+    function updateBooking(id, data) {
+        const bookings = getBookings();
+        const i = bookings.findIndex(b => b.id === id);
+        if (i !== -1) {
+            bookings[i] = { ...bookings[i], ...data };
+            saveBookings(bookings);
+            return bookings[i];
+        }
+        return null;
+    }
+
+    function deleteBooking(id) {
+        const bookings = getBookings().filter(b => b.id !== id);
+        saveBookings(bookings);
+        renderBookings();
+    }
+
+    // ====== OPEN/CLOSE MODAL ======
+    addEmployeeBtn.addEventListener("click", () => {
+        boekingModal.style.display = "flex";
+        fillDefaults();
+        boekingForm.reset();
+        editingId = null;
+    });
+
+    closeModalBtn.addEventListener("click", () => boekingModal.style.display = "none");
+
+    cancelBtn.addEventListener("click", () => {
+        if (confirm("Weet je zeker dat je wilt stoppen met invullen?")) {
+            boekingModal.style.display = "none";
+        }
+    });
+
+    // ====== WEEK EN DATUM ======
+   // --- Plaats dit in je script, binnen DOMContentLoaded of direct na DOMContentLoaded ---
+(function setupWeekYearPlanValidation() {
+  const weekInput = document.getElementById('weekNumber');
+  const yearInput = document.getElementById('year');
+  const planDatumInput = document.getElementById('planbaar');
+  const urenInput = document.getElementById('hours');
+
+  const weekError = document.getElementById('weekNumberError');
+  const yearError = document.getElementById('yearError');
+  const planError = document.getElementById('planbaarError');
+  const urenError = document.getElementById('hoursError');
+
+  if (!weekInput || !yearInput || !planDatumInput || !urenInput) return;
+
+  // --- Input types en eigenschappen ---
+  try { weekInput.type = 'number'; } catch(e) {}
+  weekInput.min = 1; weekInput.max = 52; weekInput.step = 1;
+
+  try { yearInput.type = 'number'; } catch(e) {}
+  yearInput.min = 1900; yearInput.max = 2100; yearInput.step = 1;
+
+  try { planDatumInput.type = 'date'; } catch(e) {}
+
+  try { urenInput.type = 'number'; } catch(e) {}
+  urenInput.min = 0; urenInput.step = 1;
+
+  // --- Helper: bereken ISO weeknummer ---
+  function getWeekNumber(d) {
+    const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    const dayNum = date.getUTCDay() || 7;
+    date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
+    return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+  }
+
+  // --- Helper: bereken maandag van week X in jaar Y ---
+  function getMondayOfWeek(week, year) {
+    const simple = new Date(year, 0, 1 + (week - 1) * 7);
+    const dow = simple.getDay();
+    const monday = new Date(simple);
+    if (dow <= 4)
+      monday.setDate(simple.getDate() - simple.getDay() + 1);
+    else
+      monday.setDate(simple.getDate() + 8 - simple.getDay());
+    return monday;
+  }
+
+  // --- Vul standaardwaarden ---
+  function fillDefaults() {
+    const today = new Date();
+    const weekNr = getWeekNumber(today);
+    const year = today.getFullYear();
+    const isoDate = today.toISOString().split('T')[0];
+
+    weekInput.value = weekNr;
+    yearInput.value = year;
+    planDatumInput.value = isoDate;
+
+    clearErrors();
+  }
+
+  function clearErrors() {
+    if (weekError) weekError.textContent = '';
+    if (yearError) yearError.textContent = '';
+    if (planError) planError.textContent = '';
+    if (urenError) urenError.textContent = '';
+  }
+
+  // --- Update datum als week of jaar verandert ---
+  function updatePlanDateFromWeekYear() {
+    let week = parseInt(weekInput.value) || 1;
+    let year = parseInt(yearInput.value) || new Date().getFullYear();
+
+    if (week < 1) week = 1;
+    if (week > 52) week = 52;
+
+    const monday = getMondayOfWeek(week, year);
+    planDatumInput.value = monday.toISOString().split('T')[0];
+  }
+
+  // --- Live validatie: verwijder niet-cijfers ---
+  [weekInput, yearInput, urenInput].forEach(el => {
+    el.addEventListener('input', () => {
+      const cleaned = String(el.value).replace(/\D/g, '');
+      if (el.value !== cleaned) el.value = cleaned;
+
+      if (el === weekInput) updatePlanDateFromWeekYear();
+      if (el === yearInput) updatePlanDateFromWeekYear();
+
+      if (el === weekInput && weekError) weekError.textContent = '';
+      if (el === yearInput && yearError) yearError.textContent = '';
+      if (el === urenInput && urenError) urenError.textContent = '';
+    });
+  });
+
+  // --- Pijltjes gedrag voor week en jaar ---
+  weekInput.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      let cur = parseInt(weekInput.value || '1', 10);
+      cur = e.key === 'ArrowUp' ? (cur >= 52 ? 1 : cur + 1) : (cur <= 1 ? 52 : cur - 1);
+      weekInput.value = cur;
+      weekError.textContent = '';
+      updatePlanDateFromWeekYear();
+    }
+  });
+
+  yearInput.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      let cur = parseInt(yearInput.value || '0', 10);
+      cur = e.key === 'ArrowUp' ? cur + 1 : cur - 1;
+      cur = Math.min(Math.max(cur, parseInt(yearInput.min)), parseInt(yearInput.max));
+      yearInput.value = cur;
+      yearError.textContent = '';
+      updatePlanDateFromWeekYear();
+    }
+  });
+
+  // --- Blur checks: enforce ranges en errors ---
+  weekInput.addEventListener('blur', () => {
+    let val = parseInt(weekInput.value || '0', 10);
+    if (!val || val < 1 || val > 52) {
+      weekError.textContent = 'Voer een geldig weeknummer in (1–52).';
+      if (!val || val < 1) weekInput.value = 1;
+      if (val > 52) weekInput.value = 52;
+    } else weekError.textContent = '';
+    updatePlanDateFromWeekYear();
+  });
+
+  yearInput.addEventListener('blur', () => {
+    let val = parseInt(yearInput.value || '0', 10);
+    const minY = parseInt(yearInput.min, 10) || 1900;
+    const maxY = parseInt(yearInput.max, 10) || 2100;
+    if (!val || val < minY || val > maxY) {
+      yearError.textContent = `Voer een geldig jaar in (${minY}–${maxY}).`;
+      if (!val || val < minY) yearInput.value = minY;
+      if (val > maxY) yearInput.value = maxY;
+    } else yearError.textContent = '';
+    updatePlanDateFromWeekYear();
+  });
+
+  urenInput.addEventListener('blur', () => {
+    const val = urenInput.value.trim();
+    if (val === '' || !/^\d+$/.test(val)) {
+      urenError.textContent = 'Voer een geldig aantal uren in (alleen cijfers).';
+    } else urenError.textContent = '';
+  });
+
+  // --- Initialisatie ---
+  fillDefaults();
+
+  // Expose fn voor andere scripts (optioneel)
+  window.fillDefaultsWeekYearPlan = fillDefaults;
+
+})();
+
+
+    // ====== SUBMIT FORM ======
+    boekingForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const medewerker = document.getElementById("medewerker").value.trim();
+        const klant = document.getElementById("klant").value.trim();
+        const uren = document.getElementById("hours").value.trim();
+        const planDatum = planDatumInput.value;
+        const functie = document.getElementById("indirecteUren").value;
+        const opdracht = document.getElementById("opdracht").value;
+
+        if (!medewerker || !klant || !uren || !planDatum) {
+            alert("Vul alle verplichte velden in.");
+            return;
         }
 
-        function formatDate(dateString) {
-            if (!dateString) return '-';
-            try {
-                const date = new Date(dateString);
-                if (isNaN(date.getTime())) return '-';
-                const day = String(date.getDate()).padStart(2, '0');
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const year = date.getFullYear();
-                return `${day}-${month}-${year}`;
-            } catch (e) {
-                return '-';
-            }
+        const bookingData = { medewerker, klant, uren, planDatum, functie, opdracht };
+
+        if (editingId) {
+            updateBooking(editingId, bookingData);
+            alert("Boeking bijgewerkt!");
+        } else {
+            addBooking(bookingData);
+            alert("Boeking opgeslagen!");
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            
-            // --- Variabelen ---
-            let klantenData = []; // Volledige dataset
-            let gefilterdeKlanten = []; // Getoonde dataset
-            let geselecteerdeIds = new Set();
-            const localStorageKey = 'qplanning_klanten_v2'; 
-            
-            // DOM Elementen
-            const tabelBody = document.getElementById('klanten-tabel-body');
-            const addKlantBtn = document.getElementById('add-klant-btn');
-            
-            // Modal
-            const modal = document.getElementById('klant-modal');
-            const modalTitle = document.getElementById('modal-title');
-            const modalSaveBtn = document.getElementById('modal-save-btn');
-            const closeModalBtn = document.getElementById('closeModal');
-            const cancelBtn = document.getElementById('cancelBtn');
-            const klantForm = document.getElementById('klant-form');
-            
-            // Filters
-            const searchInput = document.getElementById('searchInput');
-            const clearSearchBtn = document.getElementById('clearSearch');
-            const partnerFilter = document.getElementById('partnerFilter');
-            const teamFilter = document.getElementById('teamFilter');
-            const clearFiltersBtn = document.getElementById('clearFilters');
-            const clearAllFiltersBtn = document.getElementById('clearAllFilters');
-            
-            // Bulk Actions
-            const bulkActionsBar = document.getElementById('bulkActionsBar');
-            const selectedCountEl = document.getElementById('selectedCount');
-            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-            const bulkDeleteBtn = document.getElementById('bulkDelete');
+        boekingModal.style.display = "none";
+        boekingForm.reset();
+        renderBookings();
+    });
 
-            // Meldingen
-            const noResults = document.getElementById('noResults');
-            const tableContainer = document.querySelector('.table-container');
-            const errorModal = document.getElementById('errorModal');
-            const closeErrorModal = document.getElementById('closeErrorModal');
-            const closeErrorBtn = document.getElementById('closeErrorBtn');
-            const confirmModal = document.getElementById('confirmModal');
-            const successNotification = document.getElementById('successNotification');
+    // ====== DROPDOWNS (zoekbaar) ======
+    setupDropdown("medewerker", "medewerkerDropdown");
+    setupDropdown("klant", "klantDropdown");
 
-            // --- Dropdown Logica (Header) ---
-            const dropdowns = document.querySelectorAll('.dropdown');
-            const accountBtn = document.getElementById('accountBtn');
-            const accountMenu = document.getElementById('accountMenu');
-            dropdowns.forEach(dropdown => {
-                const toggle = dropdown.querySelector('.dropdown-toggle');
-                toggle.addEventListener('click', function(e) {
-                    e.preventDefault(); e.stopPropagation();
-                    dropdowns.forEach(d => { if (d !== dropdown) d.classList.remove('active'); });
-                    dropdown.classList.toggle('active');
-                });
+    function setupDropdown(inputId, dropdownId) {
+        const input = document.getElementById(inputId);
+        const dropdown = document.getElementById(dropdownId);
+        const items = dropdown.querySelectorAll(".suggestion-item");
+
+        input.addEventListener("focus", () => dropdown.style.display = "block");
+
+        input.addEventListener("input", () => {
+            const filter = input.value.toLowerCase();
+            let visible = false;
+            items.forEach(item => {
+                const match = item.textContent.toLowerCase().includes(filter);
+                item.style.display = match ? "block" : "none";
+                if (match) visible = true;
             });
-            const accountDropdown = document.querySelector('.account-dropdown');
-            accountBtn.addEventListener('click', function(e) {
-                e.preventDefault(); e.stopPropagation();
-                accountDropdown.classList.toggle('active');
-            });
-            document.addEventListener('click', function() {
-                dropdowns.forEach(d => d.classList.remove('active'));
-                accountDropdown.classList.remove('active');
-            });
-            document.querySelectorAll('.dropdown-menu, .account-menu').forEach(menu => {
-                menu.addEventListener('click', e => e.stopPropagation());
-            });
-
-            // --- Data & Opslag Logica ---
-            function saveKlanten() {
-                localStorage.setItem(localStorageKey, JSON.stringify(klantenData));
-            }
-
-            async function laadKlanten() {
-                const opgeslagenData = localStorage.getItem(localStorageKey);
-                let dataGeldig = false;
-
-                if (opgeslagenData) {
-                    try {
-                        const data = JSON.parse(opgeslagenData);
-                        if (Array.isArray(data)) {
-                             klantenData = data;
-                             dataGeldig = true;
-                        }
-                    } catch (e) { dataGeldig = false; }
-                }
-
-                if (!dataGeldig) {
-                    console.log("Geen (of ongeldige) localStorage data, laden uit klanten.json...");
-                    try {
-                        const response = await fetch('../klanten.json'); 
-                        if (!response.ok) throw new Error('Kon klanten.json niet laden');
-                        klantenData = await response.json();
-                        saveKlanten(); 
-                    } catch (error) {
-                        console.error('Fout bij laden:', error);
-                        tabelBody.innerHTML = `<tr><td colspan="7">Kon data niet laden.</td></tr>`;
-                    }
-                }
-                
-                populateFilters();
-                applyFilters();
-            }
-
-            // --- Filter Logica ---
-            function populateFilters() {
-                const partners = new Set(klantenData.map(k => k.partnerManager).filter(Boolean));
-                const teams = new Set(klantenData.map(k => k.verantwoordelijkTeam).filter(Boolean));
-
-                partnerFilter.innerHTML = '<option value="">Alle Partners</option>';
-                partners.forEach(partner => {
-                    const option = new Option(partner, partner);
-                    partnerFilter.add(option);
-                });
-
-                teamFilter.innerHTML = '<option value="">Alle Teams</option>';
-                teams.forEach(team => {
-                    const option = new Option(team, team);
-                    teamFilter.add(option);
-                });
-            }
-
-            function applyFilters() {
-                const zoekTerm = searchInput.value.toLowerCase();
-                const partner = partnerFilter.value;
-                const team = teamFilter.value;
-
-                gefilterdeKlanten = klantenData.filter(klant => {
-                    const zoekMatch = !zoekTerm ||
-                        klant.klantNaam.toLowerCase().includes(zoekTerm) ||
-                        klant.partnerManager.toLowerCase().includes(zoekTerm) ||
-                        (klant.verantwoordelijkTeam && klant.verantwoordelijkTeam.toLowerCase().includes(zoekTerm));
-                    
-                    const partnerMatch = !partner || klant.partnerManager === partner;
-                    const teamMatch = !team || klant.verantwoordelijkTeam === team;
-
-                    return zoekMatch && partnerMatch && teamMatch;
-                });
-
-                renderTabel();
-                updateBulkActionsBar(); // Zorgt dat selectie gereset wordt
-            }
-
-            // --- Tabel Render Logica ---
-            function renderTabel() {
-                tabelBody.innerHTML = ''; 
-                
-                if (gefilterdeKlanten.length === 0) {
-                    tableContainer.style.display = 'none';
-                    noResults.style.display = 'block';
-                } else {
-                    tableContainer.style.display = 'block';
-                    noResults.style.display = 'none';
-                }
-
-                gefilterdeKlanten.forEach(klant => {
-                    const tr = document.createElement('tr');
-                    tr.dataset.id = klant.id;
-                    const isChecked = geselecteerdeIds.has(klant.id);
-                    
-                    tr.innerHTML = `
-                        <td class="select-column"><input type="checkbox" class="row-checkbox select-checkbox" data-id="${klant.id}" ${isChecked ? 'checked' : ''}></td>
-                        <td data-label="Klant naam">${klant.klantNaam || '-'}</td>
-                        <td data-label="Partner/Manager">${klant.partnerManager || '-'}</td>
-                        <td data-label="Budget">${formatCurrency(klant.budget)}</td>
-                        <td data-label="Startdatum">${formatDate(klant.startdatum)}</td>
-                        <td data-label="Einddatum">${formatDate(klant.einddatum)}</td>
-                        <td class="actions">
-                            <div class="action-buttons">
-                                <button class="btn-action btn-edit" data-id="${klant.id}" title="Bewerken">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                    </svg>
-                                    <span>Bewerken</span>
-                                </button>
-                                <button class="btn-action btn-delete" data-id="${klant.id}" title="Verwijderen">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polyline points="3 6 5 6 21 6"></polyline>
-                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                    </svg>
-                                    <span>Verwijderen</span>
-                                </button>
-                            </div>
-                        </td>
-                    `;
-                    tabelBody.appendChild(tr);
-                });
-
-                koppelTabelActies();
-            }
-
-            // --- Koppel Acties ---
-            function koppelTabelActies() {
-                // Checkboxen
-                tabelBody.querySelectorAll('.row-checkbox').forEach(checkbox => {
-                    checkbox.addEventListener('change', (e) => {
-                        const id = parseInt(e.target.dataset.id);
-                        if (e.target.checked) {
-                            geselecteerdeIds.add(id);
-                        } else {
-                            geselecteerdeIds.delete(id);
-                        }
-                        updateBulkActionsBar();
-                    });
-                });
-
-                // Edit Knoppen
-                tabelBody.querySelectorAll('.btn-edit').forEach(knop => {
-                    knop.addEventListener('click', (e) => {
-                        const id = parseInt(e.currentTarget.dataset.id);
-                        openKlantModal('edit', id);
-                    });
-                });
-                
-                // Delete Knoppen
-                tabelBody.querySelectorAll('.btn-delete').forEach(knop => {
-                    knop.addEventListener('click', (e) => {
-                        const id = parseInt(e.currentTarget.dataset.id);
-                        const klant = klantenData.find(k => k.id === id);
-                        showConfirmDelete([id], klant ? `klant "${klant.klantNaam}"` : 'deze klant');
-                    });
-                });
-            }
-
-            // --- Bulk Actie Logica ---
-            function setupBulkSelection() {
-                selectAllCheckbox.addEventListener('change', () => {
-                    if (selectAllCheckbox.checked) {
-                        gefilterdeKlanten.forEach(k => geselecteerdeIds.add(k.id));
-                    } else {
-                        gefilterdeKlanten.forEach(k => geselecteerdeIds.delete(k.id));
-                    }
-                    renderTabel();
-                    updateBulkActionsBar();
-                });
-
-                bulkDeleteBtn.addEventListener('click', () => {
-                    showConfirmDelete([...geselecteerdeIds], `${geselecteerdeIds.size} klanten`);
-                });
-            }
-
-            function updateBulkActionsBar() {
-                const geselecteerdInView = gefilterdeKlanten.filter(k => geselecteerdeIds.has(k.id)).length;
-                
-                if (geselecteerdInView === 0) {
-                    bulkActionsBar.style.display = 'none';
-                    selectAllCheckbox.checked = false;
-                    selectAllCheckbox.indeterminate = false;
-                } else {
-                    bulkActionsBar.style.display = 'flex';
-                    selectedCountEl.textContent = geselecteerdInView;
-                    selectAllCheckbox.checked = geselecteerdInView === gefilterdeKlanten.length;
-                    selectAllCheckbox.indeterminate = geselecteerdInView < gefilterdeKlanten.length;
-                }
-            }
-            
-            // --- Modal Logica ---
-            function openKlantModal(mode, klantId = null) {
-                clearAllErrors();
-                klantForm.reset();
-                document.getElementById('klant-id').value = '';
-
-                if (mode === 'edit') {
-                    const klant = klantenData.find(k => k.id === klantId);
-                    if (!klant) return;
-
-                    modalTitle.textContent = 'Klant Bewerken';
-                    modalSaveBtn.textContent = 'Wijzigingen Opslaan';
-                    document.getElementById('klant-id').value = klant.id;
-                    document.getElementById('klant-naam').value = klant.klantNaam || '';
-                    document.getElementById('klant-boekjaar').value = klant.boekjaar || '';
-                    document.getElementById('klant-budget').value = klant.budget || '';
-                    document.getElementById('klant-partner').value = klant.partnerManager || '';
-                    document.getElementById('klant-verantwoordelijk').value = klant.verantwoordelijkTeam || '';
-                    document.getElementById('klant-planbaar').value = klant.planbaarDoorTeams || '';
-                    document.getElementById('klant-startdatum').value = klant.startdatum || '';
-                    document.getElementById('klant-einddatum').value = klant.einddatum || '';
-                } else {
-                    modalTitle.textContent = 'Nieuwe klant toevoegen';
-                    modalSaveBtn.textContent = 'Opslaan';
-                }
-                modal.style.display = 'flex'; // GEWIJZIGD
-            }
-
-            function closeModal() {
-                modal.style.display = 'none';
-                clearAllErrors();
-                klantForm.reset();
-            }
-
-            // --- Validatie Logica ---
-            function validateForm() {
-                const errors = [];
-                const velden = {
-                    klantNaam: { id: 'klant-naam', naam: 'Klant naam' },
-                    budget: { id: 'klant-budget', naam: 'Budget' },
-                    partnerManager: { id: 'klant-partner', naam: 'Partner/Manager' }
-                };
-
-                // Check verplichte velden
-                Object.values(velden).forEach(veld => {
-                    const element = document.getElementById(veld.id);
-                    if (!element.value || element.value.trim() === '') {
-                        errors.push({ id: veld.id, bericht: `${veld.naam} is verplicht.` });
-                    }
-                });
-
-                // Specifieke validaties
-                const klantNaam = document.getElementById(velden.klantNaam.id).value;
-                if (klantNaam && klantNaam.length < 2) {
-                    errors.push({ id: velden.klantNaam.id, bericht: 'Klant naam moet minimaal 2 karakters lang zijn.' });
-                }
-
-                const budget = document.getElementById(velden.budget.id).value;
-                if (budget && parseFloat(budget) < 0) {
-                    errors.push({ id: velden.budget.id, bericht: 'Budget mag niet negatief zijn.' });
-                }
-                
-                return errors;
-            }
-
-            function showValidationErrors(errors) {
-                const errorList = document.getElementById('errorList');
-                errorList.innerHTML = '';
-                
-                errors.forEach(err => {
-                    // Toon in modal
-                    const errorEl = document.getElementById(err.id + 'Error');
-                    if (errorEl) {
-                        errorEl.textContent = err.bericht;
-                        errorEl.classList.add('show');
-                    }
-                    document.getElementById(err.id)?.classList.add('error');
-                    
-                    // Toon in popup
-                    const li = document.createElement('div');
-                    li.className = 'error-item';
-                    li.textContent = '• ' + err.bericht;
-                    errorList.appendChild(li);
-                });
-                errorModal.style.display = 'flex'; // GEWIJZIGD
-            }
-
-            function clearAllErrors() {
-                klantForm.querySelectorAll('input, select').forEach(el => {
-                    el.classList.remove('error', 'success');
-                });
-                klantForm.querySelectorAll('.error-message').forEach(el => {
-                    el.classList.remove('show');
-                    el.textContent = '';
-                });
-                errorModal.style.display = 'none';
-            }
-
-            // --- Formulier Submit ---
-            klantForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                clearAllErrors();
-                const errors = validateForm();
-
-                if (errors.length > 0) {
-                    showValidationErrors(errors);
-                    return;
-                }
-
-                // Zet laadstatus op knop
-                modalSaveBtn.classList.add('loading');
-                modalSaveBtn.disabled = true;
-
-                const id = parseInt(document.getElementById('klant-id').value);
-                const data = {
-                    klantNaam: document.getElementById('klant-naam').value,
-                    boekjaar: document.getElementById('klant-boekjaar').value,
-                    budget: document.getElementById('klant-budget').value,
-                    partnerManager: document.getElementById('klant-partner').value,
-                    verantwoordelijkTeam: document.getElementById('klant-verantwoordelijk').value,
-                    planbaarDoorTeams: document.getElementById('klant-planbaar').value,
-                    startdatum: document.getElementById('klant-startdatum').value,
-                    einddatum: document.getElementById('klant-einddatum').value
-                };
-
-                // Simuleer opslaan
-                setTimeout(() => {
-                    if (id) {
-                        // Bewerken
-                        const index = klantenData.findIndex(k => k.id === id);
-                        if (index > -1) {
-                            klantenData[index] = { ...klantenData[index], ...data };
-                        }
-                        showSuccessNotification('Klant succesvol bijgewerkt!');
-                    } else {
-                        // Nieuw
-                        data.id = Date.now(); // Simpel ID
-                        klantenData.push(data);
-                        showSuccessNotification('Klant succesvol toegevoegd!');
-                    }
-                    
-                    saveKlanten();
-                    populateFilters();
-                    applyFilters();
-                    closeModal();
-                    
-                    modalSaveBtn.classList.remove('loading');
-                    modalSaveBtn.disabled = false;
-                }, 500); // Korte vertraging
-            });
-
-            // --- Bevestiging & Notificatie Logica ---
-            function showConfirmDelete(ids, naam) {
-                const confirmTitle = document.getElementById('confirmTitle');
-                const confirmMessage = document.getElementById('confirmMessage');
-                const confirmDetails = document.getElementById('confirmDetails');
-                const confirmBtn = document.getElementById('confirmBtn');
-
-                confirmTitle.textContent = 'Klant(en) Verwijderen';
-                confirmMessage.textContent = `Weet je zeker dat je ${naam} wilt verwijderen?`;
-                confirmDetails.style.display = 'none';
-                confirmBtn.textContent = 'Verwijderen';
-                confirmBtn.className = 'btn btn-danger'; // Zorg dat het 'gevaar' stijl heeft
-                
-                confirmModal.style.display = 'flex'; // GEWIJZIGD
-
-                confirmBtn.onclick = () => {
-                    handleDelete(ids);
-                    confirmModal.style.display = 'none';
-                };
-            }
-
-            function handleDelete(ids) {
-                klantenData = klantenData.filter(k => !ids.includes(k.id));
-                geselecteerdeIds.clear();
-                saveKlanten();
-                populateFilters();
-                applyFilters();
-                showSuccessNotification(`${ids.length} klant(en) succesvol verwijderd.`);
-            }
-
-            function showSuccessNotification(message) {
-                successNotification.style.display = 'flex';
-                document.getElementById('successMessage').textContent = message;
-                setTimeout(() => {
-                    successNotification.style.display = 'none';
-                }, 3000);
-            }
-            
-            // --- Event Listeners Toewijzen ---
-            
-            // Modals sluiten
-            [closeModalBtn, cancelBtn, closeErrorModal, closeErrorBtn].forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.currentTarget.closest('.modal').style.display = 'none';
-                });
-            });
-            document.getElementById('closeConfirmModal').addEventListener('click', () => confirmModal.style.display = 'none');
-            document.getElementById('cancelConfirmBtn').addEventListener('click', () => confirmModal.style.display = 'none');
-            document.getElementById('closeSuccessNotification').addEventListener('click', () => successNotification.style.display = 'none');
-
-            // Nieuwe klant knop
-            addKlantBtn.addEventListener('click', () => openKlantModal('new'));
-
-            // Filters
-            searchInput.addEventListener('input', () => {
-                clearSearchBtn.style.display = searchInput.value ? 'block' : 'none';
-                applyFilters();
-            });
-            clearSearchBtn.addEventListener('click', () => {
-                searchInput.value = '';
-                clearSearchBtn.style.display = 'none';
-                applyFilters();
-            });
-            [partnerFilter, teamFilter].forEach(el => el.addEventListener('change', applyFilters));
-            clearFiltersBtn.addEventListener('click', () => {
-                searchInput.value = '';
-                clearSearchBtn.style.display = 'none';
-                partnerFilter.value = '';
-                teamFilter.value = '';
-                applyFilters();
-            });
-            clearAllFiltersBtn.addEventListener('click', () => clearFiltersBtn.click());
-
-            // Bulk selectie
-            setupBulkSelection();
-
-            // --- Initialisatie ---
-            laadKlanten();
+            dropdown.style.display = visible ? "block" : "none";
         });
 
-    </script>
+        items.forEach(item => {
+            item.addEventListener("click", () => {
+                input.value = item.textContent;
+                dropdown.style.display = "none";
+            });
+        });
 
-    <script src="/Header/header-script.js"></script>
+        document.addEventListener("click", (e) => {
+            if (!dropdown.contains(e.target) && e.target !== input) {
+                dropdown.style.display = "none";
+            }
+        });
+    }
+
+    // ====== FILTERS & ZOEKEN ======
+    const medewerkerFilter = document.getElementById("medewerkerFilter");
+    const searchInput = document.getElementById("searchInput");
+
+    medewerkerFilter.addEventListener("focus", () => medewerkerFilter.size = 5);
+    medewerkerFilter.addEventListener("blur", () => medewerkerFilter.size = 0);
+
+    searchInput.addEventListener("input", () => {
+        const filter = searchInput.value.toLowerCase();
+        document.querySelectorAll(".data-table tbody tr").forEach(row => {
+            row.style.display = row.textContent.toLowerCase().includes(filter) ? "" : "none";
+        });
+    });
+
+    // ====== RENDER BOOKINGS ======
+    function renderBookings() {
+        const bookings = getBookings();
+        tableBody.innerHTML = "";
+
+        bookings.forEach(b => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${b.medewerker}</td>
+                <td>${b.klant}@bedrijf.nl</td>
+                <td>${b.uren}</td>
+                <td>${b.functie}</td>
+                <td>${b.opdracht}</td>
+                <td>${b.planDatum}</td>
+                <td>Ja</td>
+                <td>${b.status}</td>
+                    <td class="actions-cell">
+                        <button class="btn-action edit" data-id="${b.id}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+                            </svg>
+                            Bewerken
+                        </button>
+                        <button class="btn-action deactivate" data-id="${b.id}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 6L6 18M6 6l12 12"></path>
+                            </svg>
+                            Deactiveren
+                        </button>
+                    </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    renderBookings();
+
+    // ====== ACTIEKNOPPEN ======
+    document.addEventListener("click", (e) => {
+        const id = parseInt(e.target.closest("button")?.dataset?.id);
+        if (!id) return;
+
+        if (e.target.closest(".edit")) {
+            const b = getBookings().find(b => b.id === id);
+            if (!b) return;
+
+            document.getElementById("medewerker").value = b.medewerker;
+            document.getElementById("klant").value = b.klant;
+            document.getElementById("hours").value = b.uren;
+            planDatumInput.value = b.planDatum;
+            document.getElementById("indirecteUren").value = b.functie;
+            document.getElementById("opdracht").value = b.opdracht;
+
+            editingId = id;
+            boekingModal.style.display = "flex";
+        }
+
+        if (e.target.closest(".deactivate")) {
+            if (confirm("Weet je zeker dat je deze boeking wilt verwijderen?")) {
+                deleteBooking(id);
+            }
+        }
+    });
+});
+</script>
+
 </body>
-
 </html>
