@@ -1,0 +1,25 @@
+[
+  {
+    "id": 101,
+    "voornaam": "Jan",
+    "tussenvoegsel": "",
+    "achternaam": "Jansen",
+    "email": "jan.jansen@qplanning.nl",
+    "tarief": "85",
+    "functie": "Consultant",
+    "team": "Limburg",
+    "planbaarDoorTeams": ["Limburg", "Team Audit A"]
+  },
+  {
+    "id": 102,
+    "voornaam": "Marieke",
+    "tussenvoegsel": "de",
+    "achternaam": "Vries",
+    "email": "marieke.devries@qplanning.nl",
+    "tarief": "110",
+    "functie": "Manager",
+    "team": "Team Accountancy",
+    "planbaarDoorTeams": ["Team Accountancy", "Utrecht", "Rotterdam"]
+  }
+]
+
