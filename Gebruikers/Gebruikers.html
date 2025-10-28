@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Gebruikersbeheer - QPlanning</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../medewerkerbeheer.css">
+    <style>
+        /* Layout header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .page-header-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+
+        /* Foutmeldingen bij inputs */
+        .error-message { color: #d32f2f; font-size: .8rem; line-height: 1.2; margin-top: .25rem; display: none; }
+        .error-message.show { display: block; }
+        input.error, select.error { border-color: #d32f2f; background-color: #fff5f5; }
+
+        /* Buttons */
+        .btn { display: inline-flex; align-items: center; gap: .4rem; border: 0; border-radius: .4rem; font-size: .9rem; line-height: 1.2; font-weight: 500; cursor: pointer; padding: .6rem .8rem; }
+        .btn-primary { background-color: #2563eb; color: #fff; }
+        .btn-secondary { background-color: #e5e7eb; color: #111827; }
+        .btn-danger { background-color: #dc2626; color: #fff; }
+
+        .btn-action { display: inline-flex; align-items: center; gap: .4rem; background: #f3f4f6; color: #111827; border: 1px solid #d1d5db; border-radius: .4rem; font-size: .8rem; line-height: 1.2; padding: .4rem .6rem; cursor: pointer; }
+        .btn-action svg { min-width: 16px; }
+
+        /* Tabel + bulkbar */
+        .table-container { overflow-x: auto; }
+        .bulk-actions-bar { background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: .5rem; padding: .75rem 1rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem; }
+        .no-results { text-align: center; padding: 2rem 1rem; color: #6b7280; }
+        .no-results-icon { font-size: 2rem; margin-bottom: .5rem; }
+        .loading { opacity: .6; pointer-events: none; }
+
+        /* Form layout */
+        .form-row { display: flex; flex-wrap: wrap; gap: 1rem; }
+        .form-group { flex: 1; min-width: 0; display: flex; flex-direction: column; margin-bottom: 1rem; }
+        label { font-size: .9rem; font-weight: 500; color: #374151; margin-bottom: .4rem; }
+        input[type="text"], input[type="email"], input[type="number"], select { border: 1px solid #d1d5db; border-radius: .4rem; padding: .6rem .7rem; font-size: .9rem; background-color: #fff; }
+
+        .form-info { display: flex; justify-content: flex-end; padding: .25rem 1.25rem 0 1.25rem; }
+        .form-info small em { font-style: normal; color: #6b7280; }
+
+        /* Modals */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); align-items: center; justify-content: center; z-index: 9999; }
+        .modal-content { background: #fff; border-radius: .5rem; box-shadow: 0 2rem 4rem rgba(0,0,0,.15); width: 100%; max-width: 640px; max-height: 90dvh; display: flex; flex-direction: column; overflow: hidden; }
+        .modal-header, .modal-footer { padding: 1rem 1.25rem; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+        .modal-footer { border-top: 1px solid #e5e7eb; border-bottom: none; }
+        .modal-body { padding: 1rem 1.25rem; overflow-y: auto; }
+        .modal-close { background: none; border: 0; font-size: 1.25rem; line-height: 1; cursor: pointer; color: #6b7280; }
+
+        /* === Multiselect (checkbox dropdown) === */
+        .multiselect { position: relative; }
+        .multiselect-toggle{
+          width: 100%;
+          display: flex; align-items: center; justify-content: space-between;
+          gap: .5rem;
+          padding: .6rem .7rem;
+          background: #fff;
+          border: 1px solid #d1d5db; border-radius: .4rem;
+          font-size: .9rem; color: #111827; cursor: pointer;
+        }
+        .multiselect-toggle:focus { outline: none; box-shadow: 0 0 0 3px rgba(37,99,235,.25); }
+        .multiselect.error .multiselect-toggle{ border-color: #d32f2f; background: #fff5f5; }
+
+        .multiselect-panel{
+          position: absolute; z-index: 10000;
+          top: calc(100% + 6px); left: 0; right: 0;
+          background: #fff; border: 1px solid #e5e7eb; border-radius: .5rem;
+          box-shadow: 0 12px 24px rgba(0,0,0,.12);
+          padding: .5rem; display: none; max-height: 280px; overflow: auto;
+        }
+        .multiselect.open .multiselect-panel{ display: block; }
+
+        .multiselect-panel .option{
+          display: flex; align-items: center; gap: .6rem;
+          padding: .4rem .5rem; border-radius: .35rem; cursor: pointer;
+          user-select: none;
+        }
+        .multiselect-panel .option:hover{ background: #f3f4f6; }
+        .multiselect-panel input[type="checkbox"]{ width: 16px; height: 16px; }
+
+        #planbaarSummary{ overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="header-container">
+        <div class="header-left">
+            <div class="logo"><h1>QPlanning</h1></div>
+            <nav class="main-nav">
+                <ul class="nav-list">
+                    <li><a href="/index.html" class="nav-link">Overzicht</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">Plannen</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/Boekingen/BoekingOverzicht.html" class="dropdown-link">Boekingen</a></li>
+                            <li><a href="#" class="dropdown-link">Klantenplanning</a></li>
+                            <li><a href="#" class="dropdown-link">Medewerkerplanning</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">Beheer</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/klanten/klant.html" class="dropdown-link">Klanten beheren</a></li>
+                            <li><a href="/Medewerker/medewerkerbeheer.html" class="dropdown-link">Medewerkers beheren</a></li>
+                            <li><a href="/Gebruikers/gebruikers.html" class="dropdown-link active">Gebruikers beheren</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="header-right">
+            <div class="account-dropdown">
+                <button class="account-btn" id="accountBtn" aria-label="Account menu">
+                    <svg class="account-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </button>
+                <ul class="account-menu" id="accountMenu">
+                    <li><a href="#" class="account-link">Wijzig wachtwoord</a></li>
+                    <li><a href="#" class="account-link">Log uit</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="main-content">
+    <div class="content-container">
+        <div class="page-header">
+            <h2>Gebruikersbeheer</h2>
+            <div class="page-header-actions">
+                <button class="btn btn-primary" id="add-gebruiker-btn">Nieuwe gebruiker toevoegen</button>
+            </div>
+        </div>
+
+        <div class="filters-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Zoek op naam, e-mail, functie..." class="search-input">
+                <button class="search-clear" id="clearSearch" title="Zoekopdracht wissen" style="display:none;">×</button>
+            </div>
+            <div class="filter-options">
+                <select id="functieFilter" class="filter-select">
+                    <option value="">Alle Functies</option>
+                </select>
+                <select id="teamFilter" class="filter-select">
+                    <option value="">Alle Teams</option>
+                </select>
+                <button class="btn btn-secondary" id="clearFilters">Filters wissen</button>
+            </div>
+        </div>
+
+        <div class="bulk-actions-bar" id="bulkActionsBar" style="display:none;">
+            <div class="bulk-info"><span id="selectedCount">0</span> gebruikers geselecteerd</div>
+            <div class="bulk-buttons">
+                <button class="btn btn-secondary" id="bulkDelete">Verwijderen</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th class="select-column"><input type="checkbox" id="selectAllCheckbox" class="select-checkbox"></th>
+                        <th>Naam</th>
+                        <th>E-mail</th>
+                        <th>Tarief</th>
+                        <th>Functie</th>
+                        <th>Team</th>
+                        <th>Planbaar door teams</th>
+                        <th>Acties</th>
+                    </tr>
+                </thead>
+                <tbody id="gebruikers-tabel-body"></tbody>
+            </table>
+        </div>
+
+        <div class="no-results" id="noResults" style="display:none;">
+            <div class="no-results-icon">🔍</div>
+            <h3>Geen gebruikers gevonden</h3>
+            <p>Probeer andere zoektermen of filters.</p>
+            <button class="btn btn-primary" id="clearAllFilters">Alle filters wissen</button>
+        </div>
+    </div>
+</main>
+
+<!-- GEBRUIKER MODAL -->
+<div class="modal" id="gebruiker-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modal-title">Nieuwe gebruiker</h3>
+            <button class="modal-close" id="closeModal" aria-label="Sluit modal">&times;</button>
+        </div>
+
+        <!-- rechtsboven verplichtheid -->
+        <div class="form-info">
+            <small><em>* Verplichte velden</em></small>
+        </div>
+
+        <form id="gebruiker-form" class="modal-body" novalidate>
+            <input type="hidden" id="gebruiker-id">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="voornaam">Voornaam *</label>
+                    <input type="text" id="voornaam" name="voornaam" placeholder="Bijv. Jan" required>
+                    <div class="error-message" id="voornaamError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="tussenvoegsel">Tussenvoegsel</label>
+                    <input type="text" id="tussenvoegsel" name="tussenvoegsel" placeholder="(optioneel)">
+                    <div class="error-message" id="tussenvoegselError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="achternaam">Achternaam *</label>
+                    <input type="text" id="achternaam" name="achternaam" placeholder="Bijv. Jansen" required>
+                    <div class="error-message" id="achternaamError"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-mail *</label>
+                <input type="email" id="email" name="email" placeholder="bijv. jan.jansen@qplanning.nl" required>
+                <div class="error-message" id="emailError"></div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="tarief">Tarief (€) *</label>
+                    <input type="number" id="tarief" name="tarief" placeholder="Bijv. 85" step="0.01" min="0" required>
+                    <div class="error-message" id="tariefError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="functie">Functie *</label>
+                    <select id="functie" name="functie" required>
+                        <option value="" disabled selected>Selecteer...</option>
+                        <option value="Consultant">Consultant</option>
+                        <option value="Senior Consultant">Senior Consultant</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Partner">Partner</option>
+                        <option value="Planner">Planner</option>
+                    </select>
+                    <div class="error-message" id="functieError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="team">Team *</label>
+                    <select id="team" name="team" required>
+                        <option value="" disabled selected>Selecteer...</option>
+                        <option value="Limburg">Limburg</option>
+                        <option value="Utrecht">Utrecht</option>
+                        <option value="Rotterdam">Rotterdam</option>
+                        <option value="Team Audit A">Team Audit A</option>
+                        <option value="Team Accountancy">Team Accountancy</option>
+                    </select>
+                    <div class="error-message" id="teamError"></div>
+                </div>
+            </div>
+
+            <!-- Multiselect dropdown voor planbaarheid -->
+            <div class="form-group">
+                <label>Planbaar door teams *</label>
+
+                <div class="multiselect" id="planbaarTeams">
+                    <button type="button" class="multiselect-toggle" id="planbaarToggle"
+                        aria-expanded="false" aria-haspopup="listbox">
+                        <span id="planbaarSummary">Selecteer teams…</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+
+                    <div class="multiselect-panel" id="planbaarPanel" role="listbox" aria-multiselectable="true">
+                        <label class="option"><input type="checkbox" value="Limburg"><span>Limburg</span></label>
+                        <label class="option"><input type="checkbox" value="Utrecht"><span>Utrecht</span></label>
+                        <label class="option"><input type="checkbox" value="Rotterdam"><span>Rotterdam</span></label>
+                        <label class="option"><input type="checkbox" value="Team Audit A"><span>Team&nbsp;Audit&nbsp;A</span></label>
+                        <label class="option"><input type="checkbox" value="Team Audit B"><span>Team&nbsp;Audit&nbsp;B</span></label>
+                        <label class="option"><input type="checkbox" value="Team Accountancy"><span>Team&nbsp;Accountancy</span></label>
+                    </div>
+                </div>
+
+                <div class="error-message" id="planbaarTeamsError"></div>
+            </div>
+        </form>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="cancelBtn">Annuleren</button>
+            <button type="submit" class="btn btn-primary" form="gebruiker-form" id="modal-save-btn">Toevoegen</button>
+        </div>
+    </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal" id="confirmModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="confirmTitle">Bevestiging vereist</h3>
+            <button class="modal-close" id="closeConfirmModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="confirmMessage">Weet je zeker dat je deze actie wilt uitvoeren?</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="cancelConfirmBtn">Annuleren</button>
+            <button type="button" class="btn btn-danger" id="confirmBtn">Bevestigen</button>
+        </div>
+    </div>
+</div>
+
+<!-- SUCCESS TOAST -->
+<div class="success-notification" id="successNotification" style="display:none;">
+    <div class="success-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <path d="M9 12l2 2 4-4"></path><circle cx="12" cy="12" r="10"></circle>
+        </svg>
+    </div>
+    <div class="success-message" id="successMessage">Actie succesvol uitgevoerd</div>
+    <button class="success-close" id="closeSuccessNotification">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"></path>
+        </svg>
+    </button>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // --- State
+    let gebruikersData = [];
+    let gefilterdeGebruikers = [];
+    let geselecteerdeIds = new Set();
+    const storageKey = 'qplanning_gebruikers_v1';
+
+    // DOM
+    const tabelBody = document.getElementById('gebruikers-tabel-body');
+    const addBtn = document.getElementById('add-gebruiker-btn');
+
+    const modal = document.getElementById('gebruiker-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalSaveBtn = document.getElementById('modal-save-btn');
+    const closeModalBtn = document.getElementById('closeModal');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const gebruikerForm = document.getElementById('gebruiker-form');
+
+    const searchInput = document.getElementById('searchInput');
+    const clearSearchBtn = document.getElementById('clearSearch');
+    const functieFilter = document.getElementById('functieFilter');
+    const teamFilter = document.getElementById('teamFilter');
+    const clearFiltersBtn = document.getElementById('clearFilters');
+    const clearAllFiltersBtn = document.getElementById('clearAllFilters');
+
+    const bulkActionsBar = document.getElementById('bulkActionsBar');
+    const selectedCountEl = document.getElementById('selectedCount');
+    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+    const bulkDeleteBtn = document.getElementById('bulkDelete');
+
+    const confirmModal = document.getElementById('confirmModal');
+    const confirmTitle = document.getElementById('confirmTitle');
+    const confirmMessage = document.getElementById('confirmMessage');
+    const confirmBtn = document.getElementById('confirmBtn');
+    const closeConfirmModalBtn = document.getElementById('closeConfirmModal');
+    const cancelConfirmBtn = document.getElementById('cancelConfirmBtn');
+
+    const successNotification = document.getElementById('successNotification');
+    const successMessage = document.getElementById('successMessage');
+    const closeSuccessNotificationBtn = document.getElementById('closeSuccessNotification');
+
+    // Header dropdowns (nav)
+    const dropdowns = document.querySelectorAll('.dropdown');
+    const accountBtn = document.getElementById('accountBtn');
+    const accountMenu = document.getElementById('accountMenu');
+    dropdowns.forEach(d => {
+        const t = d.querySelector('.dropdown-toggle');
+        t.addEventListener('click', (e)=>{e.preventDefault();e.stopPropagation();
+            dropdowns.forEach(x=>{if(x!==d) x.classList.remove('active');});
+            d.classList.toggle('active');
+        });
+    });
+    const accountDropdown = document.querySelector('.account-dropdown');
+    accountBtn.addEventListener('click', (e)=>{e.preventDefault();e.stopPropagation();accountDropdown.classList.toggle('active');});
+    document.addEventListener('click', ()=>{ dropdowns.forEach(d=>d.classList.remove('active')); accountDropdown.classList.remove('active');});
+    document.querySelectorAll('.dropdown-menu, .account-menu').forEach(m=>m.addEventListener('click', e=>e.stopPropagation()));
+
+    // Helpers
+    function formatCurrency(value) {
+        if (value === null || value === undefined || value === '') return '-';
+        const num = parseFloat(value);
+        if (isNaN(num)) return '-';
+        return '€ ' + num.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    function fullName(g) { return [g.voornaam, g.tussenvoegsel, g.achternaam].filter(Boolean).join(' '); }
+    function saveGebruikers() { localStorage.setItem(storageKey, JSON.stringify(gebruikersData)); }
+
+    async function laadGebruikers() {
+        const ls = localStorage.getItem(storageKey);
+        let ok = false;
+        if (ls) {
+            try { const data = JSON.parse(ls); if (Array.isArray(data)) { gebruikersData = data; ok = true; } } catch(e){}
+        }
+        if (!ok) {
+            try {
+                const resp = await fetch('/Gebruikers/Gebruikers.json');
+                if (!resp.ok) throw new Error('Kon Gebruikers.json niet laden');
+                gebruikersData = await resp.json();
+                saveGebruikers();
+            } catch (e) { console.error(e); gebruikersData = []; }
+        }
+        populateFilters();
+        applyFilters();
+    }
+
+    // === Multiselect (Planbaar door teams) ===
+    const planbaarWrapper = document.getElementById('planbaarTeams');
+    const planbaarToggle = document.getElementById('planbaarToggle');
+    const planbaarPanel  = document.getElementById('planbaarPanel');
+    const planbaarSummary= document.getElementById('planbaarSummary');
+
+    function openPlanbaar(){ planbaarWrapper.classList.add('open'); planbaarToggle.setAttribute('aria-expanded','true'); }
+    function closePlanbaar(){ planbaarWrapper.classList.remove('open'); planbaarToggle.setAttribute('aria-expanded','false'); }
+    function togglePlanbaar(){ planbaarWrapper.classList.contains('open') ? closePlanbaar() : openPlanbaar(); }
+
+    function getCheckedTeams() {
+      const boxen = document.querySelectorAll('#planbaarPanel input[type="checkbox"]');
+      return Array.from(boxen).filter(b => b.checked).map(b => b.value);
+    }
+    function setCheckedTeams(values = []) {
+      const set = new Set(values);
+      const boxen = document.querySelectorAll('#planbaarPanel input[type="checkbox"]');
+      boxen.forEach(b => { b.checked = set.has(b.value); });
+      updatePlanbaarSummary();
+    }
+    function updatePlanbaarSummary(){
+      const sel = getCheckedTeams();
+      if (sel.length === 0) planbaarSummary.textContent = 'Selecteer teams…';
+      else if (sel.length <= 3) planbaarSummary.textContent = sel.join(', ');
+      else planbaarSummary.textContent = `${sel.length} teams geselecteerd`;
+    }
+
+    planbaarToggle.addEventListener('click', (e)=>{ e.stopPropagation(); togglePlanbaar(); });
+    planbaarPanel.addEventListener('click', (e)=>{
+      const target = e.target;
+      if (target && target.type === 'checkbox') updatePlanbaarSummary();
+    });
+    document.addEventListener('click', (e)=>{ if (!planbaarWrapper.contains(e.target)) closePlanbaar(); });
+    document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') closePlanbaar(); });
+
+    // Filters
+    function populateFilters() {
+        const functies = new Set(gebruikersData.map(g => g.functie).filter(Boolean));
+        const teams = new Set(gebruikersData.map(g => g.team).filter(Boolean));
+
+        functieFilter.innerHTML = '<option value="">Alle Functies</option>';
+        functies.forEach(f => functieFilter.add(new Option(f, f)));
+
+        teamFilter.innerHTML = '<option value="">Alle Teams</option>';
+        teams.forEach(t => teamFilter.add(new Option(t, t)));
+    }
+
+    function applyFilters() {
+        const term = (searchInput.value || '').toLowerCase();
+        const functie = functieFilter.value;
+        const team = teamFilter.value;
+
+        gefilterdeGebruikers = gebruikersData.filter(g => {
+            const tMatch = !term ||
+                fullName(g).toLowerCase().includes(term) ||
+                (g.email || '').toLowerCase().includes(term) ||
+                (g.functie || '').toLowerCase().includes(term);
+
+            const fMatch = !functie || g.functie === functie;
+            const teamMatch = !team || g.team === team;
+
+            return tMatch && fMatch && teamMatch;
+        });
+
+        renderTabel();
+        updateBulkActionsBar();
+    }
+
+    // Render
+    function renderTabel() {
+        const body = tabelBody; body.innerHTML = '';
+        const tableContainer = document.querySelector('.table-container');
+        const noResults = document.getElementById('noResults');
+
+        if (gefilterdeGebruikers.length === 0) {
+            tableContainer.style.display = 'none';
+            noResults.style.display = 'block';
+            return;
+        }
+        tableContainer.style.display = 'block';
+        noResults.style.display = 'none';
+
+        gefilterdeGebruikers.forEach(g => {
+            const tr = document.createElement('tr');
+            const checked = geselecteerdeIds.has(g.id);
+            const planbaar = Array.isArray(g.planbaarDoorTeams) ? g.planbaarDoorTeams.join(', ') : (g.planbaarDoorTeams || '-');
+
+            tr.innerHTML = `
+                <td class="select-column">
+                    <input type="checkbox" class="row-checkbox select-checkbox" data-id="${g.id}" ${checked ? 'checked' : ''}>
+                </td>
+                <td data-label="Naam">${fullName(g) || '-'}</td>
+                <td data-label="E-mail">${g.email || '-'}</td>
+                <td data-label="Tarief">${formatCurrency(g.tarief)}</td>
+                <td data-label="Functie">${g.functie || '-'}</td>
+                <td data-label="Team">${g.team || '-'}</td>
+                <td data-label="Planbaar door teams">${planbaar}</td>
+                <td class="actions">
+                    <div class="action-buttons">
+                        <button class="btn-action btn-edit" data-id="${g.id}" title="Bewerken">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                            <span>Bewerken</span>
+                        </button>
+                        <button class="btn-action btn-delete" data-id="${g.id}" title="Verwijderen">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                            <span>Verwijderen</span>
+                        </button>
+                    </div>
+                </td>
+            `;
+            body.appendChild(tr);
+        });
+
+        koppelTabelActies();
+    }
+
+    // Actions
+    function koppelTabelActies() {
+        tabelBody.querySelectorAll('.row-checkbox').forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                const id = parseInt(e.target.dataset.id);
+                if (e.target.checked) geselecteerdeIds.add(id);
+                else geselecteerdeIds.delete(id);
+                updateBulkActionsBar();
+            });
+        });
+        tabelBody.querySelectorAll('.btn-edit').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = parseInt(e.currentTarget.dataset.id);
+                openGebruikerModal('edit', id);
+            });
+        });
+        tabelBody.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = parseInt(e.currentTarget.dataset.id);
+                const g = gebruikersData.find(x => x.id === id);
+                showConfirmDelete([id], g ? `gebruiker "${fullName(g)}"` : 'deze gebruiker');
+            });
+        });
+    }
+
+    // Bulk selection
+    function setupBulkSelection() {
+        selectAllCheckbox.addEventListener('change', () => {
+            if (selectAllCheckbox.checked) { gefilterdeGebruikers.forEach(g => geselecteerdeIds.add(g.id)); }
+            else { gefilterdeGebruikers.forEach(g => geselecteerdeIds.delete(g.id)); }
+            renderTabel();
+            updateBulkActionsBar();
+        });
+
+        bulkDeleteBtn.addEventListener('click', () => {
+            showConfirmDelete([...geselecteerdeIds], `${geselecteerdeIds.size} gebruikers`);
+        });
+    }
+    function updateBulkActionsBar() {
+        const count = gefilterdeGebruikers.filter(g => geselecteerdeIds.has(g.id)).length;
+        if (count === 0) {
+            bulkActionsBar.style.display = 'none';
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = false;
+        } else {
+            bulkActionsBar.style.display = 'flex';
+            selectedCountEl.textContent = count;
+            selectAllCheckbox.checked = count === gefilterdeGebruikers.length;
+            selectAllCheckbox.indeterminate = count < gefilterdeGebruikers.length;
+        }
+    }
+
+    // Errors
+    function clearErrors() {
+        ['voornaam','tussenvoegsel','achternaam','email','tarief','functie','team','planbaarTeams']
+            .forEach(id => {
+                const el = document.getElementById(id);
+                const err = document.getElementById(id + 'Error');
+                if (el) el.classList.remove('error');
+                if (err) { err.textContent=''; err.classList.remove('show'); }
+                // ook wrapper-class voor multiselect verwijderen
+                if (id === 'planbaarTeams') document.getElementById('planbaarTeams').classList.remove('error');
+            });
+    }
+    function showError(id, msg) {
+        const el = document.getElementById(id);
+        const err = document.getElementById(id + 'Error');
+        if (el) el.classList.add('error');
+        if (err) { err.textContent = msg; err.classList.add('show'); }
+        if (id === 'planbaarTeams') document.getElementById('planbaarTeams').classList.add('error');
+    }
+
+    // Validatie
+    function validateForm() {
+        const errors = [];
+        const voornaam = document.getElementById('voornaam').value.trim();
+        const achternaam = document.getElementById('achternaam').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const tariefStr = document.getElementById('tarief').value.trim();
+        const functie = document.getElementById('functie').value;
+        const team = document.getElementById('team').value;
+
+        if (!voornaam) errors.push({id:'voornaam', msg:'Voornaam is verplicht.'});
+        if (voornaam && voornaam.length < 2) errors.push({id:'voornaam', msg:'Voornaam moet minimaal 2 karakters zijn.'});
+        if (!achternaam) errors.push({id:'achternaam', msg:'Achternaam is verplicht.'});
+        if (achternaam && achternaam.length < 2) errors.push({id:'achternaam', msg:'Achternaam moet minimaal 2 karakters zijn.'});
+
+        if (!email) errors.push({id:'email', msg:'E-mail is verplicht.'});
+        else {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!re.test(email)) errors.push({id:'email', msg:'Voer een geldig e-mailadres in.'});
+        }
+
+        if (tariefStr === '') errors.push({id:'tarief', msg:'Tarief is verplicht.'});
+        else if (isNaN(parseFloat(tariefStr)) || parseFloat(tariefStr) < 0) errors.push({id:'tarief', msg:'Tarief moet 0 of hoger zijn.'});
+
+        if (!functie) errors.push({id:'functie', msg:'Functie is verplicht.'});
+        if (!team) errors.push({id:'team', msg:'Team is verplicht.'});
+
+        const selectedTeams = getCheckedTeams();
+        if (selectedTeams.length === 0) errors.push({id:'planbaarTeams', msg:'Selecteer minimaal één team.'});
+
+        return errors;
+    }
+
+    // Modal open/close
+    function openGebruikerModal(mode, id=null) {
+        clearErrors();
+        gebruikerForm.reset();
+        document.getElementById('gebruiker-id').value = '';
+        setCheckedTeams([]); // reset selectie
+        updatePlanbaarSummary();
+        closePlanbaar();
+
+        if (mode === 'edit') {
+            const g = gebruikersData.find(x => x.id === id);
+            if (!g) return;
+            modalTitle.textContent = 'Gebruiker bewerken';
+            modalSaveBtn.textContent = 'Wijzigingen opslaan';
+
+            document.getElementById('gebruiker-id').value = g.id;
+            document.getElementById('voornaam').value = g.voornaam || '';
+            document.getElementById('tussenvoegsel').value = g.tussenvoegsel || '';
+            document.getElementById('achternaam').value = g.achternaam || '';
+            document.getElementById('email').value = g.email || '';
+            document.getElementById('tarief').value = g.tarief ?? '';
+            if (g.functie) document.getElementById('functie').value = g.functie;
+            if (g.team) document.getElementById('team').value = g.team;
+
+            const values = Array.isArray(g.planbaarDoorTeams)
+                ? g.planbaarDoorTeams
+                : (g.planbaarDoorTeams ? g.planbaarDoorTeams.split(',').map(s => s.trim()) : []);
+            setCheckedTeams(values);
+            updatePlanbaarSummary();
+        } else {
+            modalTitle.textContent = 'Nieuwe gebruiker';
+            modalSaveBtn.textContent = 'Toevoegen';
+        }
+        modal.style.display = 'flex';
+    }
+    function closeModal() {
+        modal.style.display = 'none';
+        clearErrors();
+        gebruikerForm.reset();
+        setCheckedTeams([]);
+        updatePlanbaarSummary();
+        closePlanbaar();
+    }
+
+    // Confirm + toast
+    function showConfirmDelete(ids, naam) {
+        confirmTitle.textContent = 'Gebruiker(s) verwijderen';
+        confirmMessage.textContent = `Weet je zeker dat je ${naam} wilt verwijderen?`;
+        confirmModal.style.display = 'flex';
+        confirmBtn.onclick = () => { handleDelete(ids); confirmModal.style.display = 'none'; };
+    }
+    function handleDelete(ids) {
+        gebruikersData = gebruikersData.filter(g => !ids.includes(g.id));
+        geselecteerdeIds.clear();
+        saveGebruikers();
+        populateFilters();
+        applyFilters();
+        showSuccess('Gebruiker(s) succesvol verwijderd.');
+    }
+    function showSuccess(msg) {
+        successMessage.textContent = msg;
+        successNotification.style.display = 'flex';
+        setTimeout(()=>{ successNotification.style.display='none'; }, 3000);
+    }
+
+    // Events
+    addBtn.addEventListener('click', ()=>openGebruikerModal('new'));
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    closeConfirmModalBtn.addEventListener('click', ()=>confirmModal.style.display='none');
+    cancelConfirmBtn.addEventListener('click', ()=>confirmModal.style.display='none');
+    closeSuccessNotificationBtn.addEventListener('click', ()=>successNotification.style.display='none');
+
+    searchInput.addEventListener('input', ()=>{ clearSearchBtn.style.display = searchInput.value ? 'block' : 'none'; applyFilters(); });
+    clearSearchBtn.addEventListener('click', ()=>{ searchInput.value = ''; clearSearchBtn.style.display = 'none'; applyFilters(); });
+    [functieFilter, teamFilter].forEach(el => el.addEventListener('change', applyFilters));
+    clearFiltersBtn.addEventListener('click', ()=>{ searchInput.value = ''; clearSearchBtn.style.display = 'none'; functieFilter.value = ''; teamFilter.value = ''; applyFilters(); });
+    clearAllFiltersBtn.addEventListener('click', ()=> clearFiltersBtn.click());
+
+    gebruikerForm.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        clearErrors();
+        const errs = validateForm();
+        if (errs.length) { errs.forEach(er => showError(er.id, er.msg)); return; }
+
+        modalSaveBtn.classList.add('loading');
+        modalSaveBtn.disabled = true;
+
+        const id = parseInt(document.getElementById('gebruiker-id').value);
+        const data = {
+            voornaam: document.getElementById('voornaam').value.trim(),
+            tussenvoegsel: document.getElementById('tussenvoegsel').value.trim(),
+            achternaam: document.getElementById('achternaam').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            tarief: document.getElementById('tarief').value.trim(),
+            functie: document.getElementById('functie').value,
+            team: document.getElementById('team').value,
+            planbaarDoorTeams: getCheckedTeams()
+        };
+
+        setTimeout(()=>{
+            if (id) {
+                const idx = gebruikersData.findIndex(g => g.id === id);
+                if (idx > -1) gebruikersData[idx] = { ...gebruikersData[idx], ...data };
+                showSuccess('Gebruiker succesvol bijgewerkt!');
+            } else {
+                data.id = Date.now();
+                gebruikersData.push(data);
+                showSuccess('Gebruiker succesvol toegevoegd!');
+            }
+            saveGebruikers();
+            populateFilters();
+            applyFilters();
+            closeModal();
+            modalSaveBtn.classList.remove('loading');
+            modalSaveBtn.disabled = false;
+        }, 300);
+    });
+
+    // Opstart
+    setupBulkSelection();
+    updatePlanbaarSummary();
+    laadGebruikers();
+});
+</script>
+</body>
+</html>
