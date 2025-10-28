@@ -1,0 +1,24 @@
+[
+    {
+        "id": 1,
+        "klantNaam": "Groot Bedrijf BV",
+        "boekjaar": "2025",
+        "budget": "10000",
+        "partnerManager": "Jan Jansen",
+        "verantwoordelijkTeam": "Team Audit A",
+        "planbaarDoorTeams": "Team Audit A, Team Audit B",
+        "startdatum": "2025-01-01",
+        "einddatum": "2025-12-31"
+    },
+    {
+        "id": 2,
+        "klantNaam": "MKB Solutions",
+        "boekjaar": "2025",
+        "budget": "5000",
+        "partnerManager": "Marieke de Vries",
+        "verantwoordelijkTeam": "Team Accountancy",
+        "planbaarDoorTeams": "Team Accountancy",
+        "startdatum": "2025-03-01",
+        "einddatum": "2025-12-31"
+    }
+]
