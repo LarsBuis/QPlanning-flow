@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Overzicht - QPlanning</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .week-navigation {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .week-navigation span {
+      font-weight: 500;
+      color: #2c3e50;
+    }
+  </style>
+</head>
+
+<body>
+<header class="header">
+        <div class="header-container">
+            <!-- Logo and main navigation -->
+            <div class="header-left">
+                <div class="logo">
+                    <h1>QPlanning</h1>
+                </div>
+                <nav class="main-nav">
+                    <ul class="nav-list">
+                        <li><a href="/index.html" class="nav-link active">Overzicht</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="nav-link dropdown-toggle">Plannen</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/Boekingen/BoekingOverzicht.html" class="dropdown-link">Boekingen</a></li>
+                                <li><a href="#" class="dropdown-link">Klantenplanning</a></li>
+                                <li><a href="#" class="dropdown-link">Medewerkerplanning</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="nav-link dropdown-toggle">Beheer</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/klanten/klant.html" class="dropdown-link">Klanten beheren</a></li>
+                                <li><a href="/Medewerker/medewerkerbeheer.html" class="dropdown-link">Medewerkers beheren</a></li>
+                                <li><a href="#" class="dropdown-link">Gebruikers beheren</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            
+            <!-- Account section -->
+            <div class="header-right">
+                <div class="account-dropdown">
+                    <button class="account-btn" id="accountBtn">
+                        <svg class="account-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </button>
+                    <ul class="account-menu" id="accountMenu">
+                        <li><a href="#" class="account-link">Wijzig wachtwoord</a></li>
+                        <li><a href="#" class="account-link">Log uit</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+<main class="main-content">
+  <div class="content-container">
+    <div class="page-header">
+      <h2>Overzicht geplande uren</h2>
+    </div>
+
+    <div class="week-navigation">
+      <button class="btn btn-secondary" id="prevPage">Vorige pagina</button>
+      <span id="weekRangeLabel">Week 1–5</span>
+      <button class="btn btn-secondary" id="nextPage">Volgende pagina</button>
+    </div>
+
+    <div class="table-container">
+      <table class="data-table" id="planningTable">
+        <thead>
+          <tr id="tableHeadRow">
+            <th>Naam medewerker</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<script>
+  const medewerkers = [
+    "Jan Jansen", "Pieter Smit", "Marieke de Vries", "Lisa van Dijk", "Ahmed El Amrani"
+  ];
+
+  const totalWeeks = 52;
+  const weeksPerPage = 5;
+  let currentPage = 0;
+
+  function generateRandomHours() {
+    return Math.floor(Math.random() * 41); // tussen 0 en 40
+  }
+
+  function renderTable() {
+    const startWeek = currentPage * weeksPerPage + 1;
+    const endWeek = Math.min(startWeek + weeksPerPage - 1, totalWeeks);
+    document.getElementById("weekRangeLabel").textContent = `Week ${startWeek}–${endWeek}`;
+
+    // Tabelkop
+    const headRow = document.getElementById("tableHeadRow");
+    headRow.innerHTML = "<th>Naam medewerker</th>";
+    for (let i = startWeek; i <= endWeek; i++) {
+      headRow.innerHTML += `<th>Week ${i}</th>`;
+    }
+
+    // Tabelbody
+    const body = document.getElementById("tableBody");
+    body.innerHTML = "";
+    medewerkers.forEach(naam => {
+      const row = document.createElement("tr");
+      let rowHTML = `<td>${naam}</td>`;
+      for (let i = startWeek; i <= endWeek; i++) {
+        rowHTML += `<td>${generateRandomHours()} u</td>`;
+      }
+      row.innerHTML = rowHTML;
+      body.appendChild(row);
+    });
+
+    // Knoppenstatus
+    document.getElementById("prevPage").disabled = currentPage === 0;
+    document.getElementById("nextPage").disabled = endWeek >= totalWeeks;
+  }
+
+  document.getElementById("prevPage").addEventListener("click", () => {
+    if (currentPage > 0) {
+      currentPage--;
+      renderTable();
+    }
+  });
+
+  document.getElementById("nextPage").addEventListener("click", () => {
+    if ((currentPage + 1) * weeksPerPage < totalWeeks) {
+      currentPage++;
+      renderTable();
+    }
+  });
+
+  document.addEventListener("DOMContentLoaded", renderTable);
+</script>
+</body>
+</html>
