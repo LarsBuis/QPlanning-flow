@@ -327,8 +327,8 @@
                     <div class="error-message" id="klantBoekjaarError"></div>
                 </div>
                 <div class="form-group">
-                    <label for="klant-budget">Budget (€)</label>
-                    <input type="number" id="klant-budget" name="budget" placeholder="-" step="0.01" min="0">
+                    <label for="klant-budget">Budget (€) *</label>
+                    <input type="number" id="klant-budget" name="budget" placeholder="-" step="0.01" min="0" required>
                     <div class="error-message" id="klant-budgetError"></div>
                 </div>
             </div>
@@ -345,9 +345,9 @@
             </div>
 
             <div class="form-group">
-                <label for="klant-verantwoordelijk">Verantwoordelijk team</label>
-                <select id="klant-verantwoordelijk" name="verantwoordelijkTeam">
-                    <option value="">Selecteer...</option>
+                <label for="klant-verantwoordelijk">Verantwoordelijk team *</label>
+                <select id="klant-verantwoordelijk" name="verantwoordelijkTeam" required>
+                    <option value="" disabled selected>Selecteer...</option>
                     <option value="Limburg">Limburg</option>
                     <option value="Utrecht">Utrecht</option>
                     <option value="Rotterdam">Rotterdam</option>
@@ -356,9 +356,9 @@
             </div>
 
             <div class="form-group">
-                <label for="klant-planbaar">Planbaar door teams</label>
-                <select id="klant-planbaar" name="planbaarDoorTeams">
-                    <option value="">Selecteer...</option>
+                <label for="klant-planbaar">Planbaar door teams *</label>
+                <select id="klant-planbaar" name="planbaarDoorTeams" required>
+                    <option value="" disabled selected>Selecteer...</option>
                     <option value="Limburg">Limburg</option>
                     <option value="Utrecht">Utrecht</option>
                     <option value="Rotterdam">Rotterdam</option>
@@ -368,13 +368,13 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="klant-startdatum">Startdatum</label>
-                    <input type="date" id="klant-startdatum" name="startdatum">
+                    <label for="klant-startdatum">Startdatum *</label>
+                    <input type="date" id="klant-startdatum" name="startdatum" required>
                     <div class="error-message" id="klant-startdatumError"></div>
                 </div>
                 <div class="form-group">
-                    <label for="klant-einddatum">Einddatum</label>
-                    <input type="date" id="klant-einddatum" name="einddatum">
+                    <label for="klant-einddatum">Einddatum *</label>
+                    <input type="date" id="klant-einddatum" name="einddatum" required>
                     <div class="error-message" id="klant-einddatumError"></div>
                 </div>
             </div>
@@ -419,7 +419,7 @@
     </div>
 </div>
 
-<!-- ERROR MODAL (niet gebruikt voor klant validatie meer, maar laten staan kan geen kwaad) -->
+<!-- ERROR MODAL -->
 <div class="modal" id="errorModal" style="display:none;">
     <div class="modal-content error-modal-content">
         <div class="modal-header">
@@ -893,51 +893,81 @@
         // --- Validatie Logica voor klant ---
         function validateForm() {
             const errors = [];
-            const velden = {
-                klantNaam:        { id: 'klant-naam',              naam: 'Klant naam' },
-                boekjaar:         { id: 'klant-boekjaar-select',   naam: 'Boekjaar' },
-                partnerManager:   { id: 'klant-partner',           naam: 'Partner/Manager' }
-            };
 
-            // verplichte velden
-            Object.values(velden).forEach(veld => {
-                const element = document.getElementById(veld.id);
-                if (!element.value || element.value.trim() === '') {
-                    errors.push({ id: veld.id, bericht: `${veld.naam} is verplicht.` });
-                }
-            });
+            // alle velden ophalen
+            const klantNaamEl = document.getElementById('klant-naam');
+            const boekjaarEl = document.getElementById('klant-boekjaar-select');
+            const budgetEl = document.getElementById('klant-budget');
+            const partnerEl = document.getElementById('klant-partner');
+            const teamVerantwoordelijkEl = document.getElementById('klant-verantwoordelijk');
+            const planbaarEl = document.getElementById('klant-planbaar');
+            const startdatumEl = document.getElementById('klant-startdatum');
+            const einddatumEl = document.getElementById('klant-einddatum');
 
-            // specifieke validaties
-            const klantNaamVal = document.getElementById('klant-naam').value;
+            const klantNaamVal = klantNaamEl.value.trim();
+            const boekjaarVal = boekjaarEl.value.trim();
+            const budgetStr = budgetEl.value.trim();
+            const partnerVal = partnerEl.value.trim();
+            const teamVerantwoordelijkVal = teamVerantwoordelijkEl.value.trim();
+            const planbaarVal = planbaarEl.value.trim();
+            const startdatumVal = startdatumEl.value.trim();
+            const einddatumVal = einddatumEl.value.trim();
+
+            // helper: push error
+            function addError(id, msg) {
+                errors.push({ id, bericht: msg });
+            }
+
+            // Verplichtheid check voor ALLES
+            if (!klantNaamVal) addError('klant-naam', 'Klant naam is verplicht.');
+            if (!boekjaarVal) addError('klant-boekjaar-select', 'Boekjaar is verplicht.');
+            if (!budgetStr) addError('klant-budget', 'Budget is verplicht.');
+            if (!partnerVal) addError('klant-partner', 'Partner/Manager is verplicht.');
+            if (!teamVerantwoordelijkVal) addError('klant-verantwoordelijk', 'Verantwoordelijk team is verplicht.');
+            if (!planbaarVal) addError('klant-planbaar', 'Planbaar door teams is verplicht.');
+            if (!startdatumVal) addError('klant-startdatum', 'Startdatum is verplicht.');
+            if (!einddatumVal) addError('klant-einddatum', 'Einddatum is verplicht.');
+
+            // Specifieke extra checks
             if (klantNaamVal && klantNaamVal.length < 2) {
-                errors.push({ id: 'klant-naam', bericht: 'Klant naam moet minimaal 2 karakters lang zijn.' });
+                addError('klant-naam', 'Klant naam moet minimaal 2 karakters lang zijn.');
             }
 
             // budget validaties
-            const gekozenJaar = klantBoekjaarSelect.value;
+            const gekozenJaar = boekjaarVal;
             const boekjaarInfo = getBoekjaarInfo(gekozenJaar);
 
-            const budgetStr = klantBudgetInput.value.trim();
             const budgetNum = budgetStr === '' ? NaN : parseFloat(budgetStr.replace(',', '.'));
 
-            if (budgetStr === '') {
-                errors.push({ id: 'klant-budget', bericht: 'Budget is verplicht.' });
-            } else if (isNaN(budgetNum) || budgetNum < 0) {
-                errors.push({ id: 'klant-budget', bericht: 'Budget moet een getal zijn van 0 of hoger.' });
-            } else if (boekjaarInfo) {
-                const maxBudgetNum = parseFloat(boekjaarInfo.budget);
-                if (!isNaN(maxBudgetNum) && budgetNum > maxBudgetNum) {
-                    errors.push({
-                        id: 'klant-budget',
-                        bericht: `Budget kan niet hoger zijn dan het boekjaarbudget (€ ${maxBudgetNum.toLocaleString('nl-NL')}).`
-                    });
+            if (budgetStr !== '') {
+                if (isNaN(budgetNum) || budgetNum < 0) {
+                    addError('klant-budget', 'Budget moet een getal zijn van 0 of hoger.');
+                } else if (boekjaarInfo) {
+                    const maxBudgetNum = parseFloat(boekjaarInfo.budget);
+                    if (!isNaN(maxBudgetNum) && budgetNum > maxBudgetNum) {
+                        addError(
+                            'klant-budget',
+                            `Budget kan niet hoger zijn dan het boekjaarbudget (€ ${maxBudgetNum.toLocaleString('nl-NL')}).`
+                        );
+                    }
+                }
+            }
+
+            // datum logica: einddatum mag niet vóór startdatum liggen
+            if (startdatumVal && einddatumVal) {
+                const startDate = new Date(startdatumVal);
+                const endDate = new Date(einddatumVal);
+                if (startDate.toString() !== 'Invalid Date' &&
+                    endDate.toString() !== 'Invalid Date' &&
+                    endDate < startDate) {
+                    addError('klant-einddatum', 'Einddatum mag niet vóór startdatum liggen.');
                 }
             }
 
             return errors;
         }
 
-        // Toon alleen inline errors, geen popup meer
+        // Toon inline errors voor alle velden
         function showValidationErrorsInline(errors) {
             const grouped = {};
             for (const err of errors) {
@@ -957,22 +987,37 @@
 
             fieldIds.forEach(id => {
                 const fieldEl = document.getElementById(id);
+
+                // veld-specifieke error element opzoeken
                 let errorEl = document.getElementById(id + 'Error');
+
+                // speciale gevallen waar de ID niet 1-op-1 matched
                 if (!errorEl) {
                     if (id === 'klant-boekjaar-select') {
                         errorEl = document.getElementById('klantBoekjaarError');
-                    }
-                    if (id === 'klant-budget') {
+                    } else if (id === 'klant-budget') {
                         errorEl = document.getElementById('klant-budgetError');
+                    } else if (id === 'klant-startdatum') {
+                        errorEl = document.getElementById('klant-startdatumError');
+                    } else if (id === 'klant-einddatum') {
+                        errorEl = document.getElementById('klant-einddatumError');
+                    } else if (id === 'klant-partner') {
+                        errorEl = document.getElementById('klant-partnerError');
+                    } else if (id === 'klant-verantwoordelijk') {
+                        errorEl = document.getElementById('klant-verantwoordelijkError');
+                    } else if (id === 'klant-planbaar') {
+                        errorEl = document.getElementById('klant-planbaarError');
                     }
                 }
 
+                // reset
                 if (fieldEl) fieldEl.classList.remove('error');
                 if (errorEl) {
                     errorEl.textContent = '';
                     errorEl.classList.remove('show');
                 }
 
+                // set error indien nodig
                 if (grouped[id]) {
                     if (fieldEl) fieldEl.classList.add('error');
                     if (errorEl) {
@@ -983,6 +1028,7 @@
             });
         }
 
+        // Haal ALLE error states weg
         function clearAllErrorsInline() {
             const fieldIds = [
                 'klant-naam',
@@ -994,15 +1040,26 @@
                 'klant-startdatum',
                 'klant-einddatum'
             ];
+
             fieldIds.forEach(id => {
                 const fieldEl = document.getElementById(id);
+
                 let errorEl = document.getElementById(id + 'Error');
                 if (!errorEl) {
                     if (id === 'klant-boekjaar-select') {
                         errorEl = document.getElementById('klantBoekjaarError');
-                    }
-                    if (id === 'klant-budget') {
+                    } else if (id === 'klant-budget') {
                         errorEl = document.getElementById('klant-budgetError');
+                    } else if (id === 'klant-startdatum') {
+                        errorEl = document.getElementById('klant-startdatumError');
+                    } else if (id === 'klant-einddatum') {
+                        errorEl = document.getElementById('klant-einddatumError');
+                    } else if (id === 'klant-partner') {
+                        errorEl = document.getElementById('klant-partnerError');
+                    } else if (id === 'klant-verantwoordelijk') {
+                        errorEl = document.getElementById('klant-verantwoordelijkError');
+                    } else if (id === 'klant-planbaar') {
+                        errorEl = document.getElementById('klant-planbaarError');
                     }
                 }
 
@@ -1091,16 +1148,17 @@
 
             const id = parseInt(document.getElementById('klant-id').value);
             const data = {
-                klantNaam: document.getElementById('klant-naam').value,
-                boekjaar: klantBoekjaarSelect.value,
-                budget: klantBudgetInput.value,
-                partnerManager: document.getElementById('klant-partner').value,
-                verantwoordelijkTeam: document.getElementById('klant-verantwoordelijk').value,
-                planbaarDoorTeams: document.getElementById('klant-planbaar').value,
-                startdatum: document.getElementById('klant-startdatum').value,
-                einddatum: document.getElementById('klant-einddatum').value
+                klantNaam: document.getElementById('klant-naam').value.trim(),
+                boekjaar: document.getElementById('klant-boekjaar-select').value.trim(),
+                budget: document.getElementById('klant-budget').value.trim(),
+                partnerManager: document.getElementById('klant-partner').value.trim(),
+                verantwoordelijkTeam: document.getElementById('klant-verantwoordelijk').value.trim(),
+                planbaarDoorTeams: document.getElementById('klant-planbaar').value.trim(),
+                startdatum: document.getElementById('klant-startdatum').value.trim(),
+                einddatum: document.getElementById('klant-einddatum').value.trim()
             };
 
+            // simulatie "opslaan"
             setTimeout(() => {
                 if (id) {
                     const index = klantenData.findIndex(k => k.id === id);
@@ -1223,9 +1281,6 @@
 
         // Bulk selectie
         setupBulkSelection();
-
-        // GEEN auto-budget sync meer bij wijziging van boekjaar:
-        // klantBoekjaarSelect.removeEventListener('change', ...) // gewoon niet toevoegen
 
         // --- Initialisatie ---
         laadBoekjaren();
