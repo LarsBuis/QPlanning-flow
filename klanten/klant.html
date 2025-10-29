@@ -933,6 +933,11 @@
                 addError('klant-naam', 'Klant naam moet minimaal 2 karakters lang zijn.');
             }
 
+            // NIEUW: klantnaam moet met hoofdletter beginnen
+            if (klantNaamVal && !/^[A-Z]/.test(klantNaamVal)) {
+                addError('klant-naam', 'Klant naam moet beginnen met een hoofdletter.');
+            }
+
             // budget validaties
             const gekozenJaar = boekjaarVal;
             const boekjaarInfo = getBoekjaarInfo(gekozenJaar);
