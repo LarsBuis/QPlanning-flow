@@ -1,25 +1,34 @@
 [
   {
-    "id": 101,
+    "id": 201,
     "voornaam": "Jan",
     "tussenvoegsel": "",
     "achternaam": "Jansen",
     "email": "jan.jansen@qplanning.nl",
-    "tarief": "85",
-    "functie": "Consultant",
-    "team": "Limburg",
-    "planbaarDoorTeams": ["Limburg", "Team Audit A"]
+    "gebruikersnaam": "jjansen",
+    "wachtwoord": "Voorbeeld123!",
+    "rollen": ["Admin", "Planner"]
   },
   {
-    "id": 102,
+    "id": 202,
     "voornaam": "Marieke",
     "tussenvoegsel": "de",
     "achternaam": "Vries",
     "email": "marieke.devries@qplanning.nl",
-    "tarief": "110",
-    "functie": "Manager",
-    "team": "Team Accountancy",
-    "planbaarDoorTeams": ["Team Accountancy", "Utrecht", "Rotterdam"]
+    "gebruikersnaam": "mdevries",
+    "wachtwoord": "SterkWw!2025",
+    "rollen": ["Manager", "Medewerker"]
+  },
+  {
+    "id": 203,
+    "voornaam": "Pieter",
+    "tussenvoegsel": "",
+    "achternaam": "Smit",
+    "email": "pieter.smit@qplanning.nl",
+    "gebruikersnaam": "psmit",
+    "wachtwoord": "Welkom@2025",
+    "rollen": ["Gast"]
   }
 ]
+
 
