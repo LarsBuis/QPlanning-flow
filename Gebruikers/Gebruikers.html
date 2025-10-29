@@ -310,6 +310,37 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // --- Normalisatie helpers (naam/tussenvoegsel/email) ---
+    function normalizeWhitespace(str) {
+      return (str || '').replace(/\s+/g, ' ').trim();
+    }
+    const DUTCH_PARTICLES = new Set([
+      'de','den','der','van','het','te','ten','ter','op','aan','bij','uit','in','von','vom','am','auf'
+    ]);
+    function capitalizeToken(token) {
+      return token.split(/([-’'–—])/).map((part) => {
+        if (/^[-’'–—]$/.test(part)) return part;
+        if (!part) return part;
+        return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+      }).join('');
+    }
+    function toNameCase(full, {treatParticlesLower = true} = {}) {
+      full = normalizeWhitespace(full);
+      if (!full) return '';
+      const words = full.split(' ');
+      return words.map((w, i) => {
+        const lower = w.toLowerCase();
+        if (i === 0) return capitalizeToken(lower);
+        if (treatParticlesLower && DUTCH_PARTICLES.has(lower)) return lower;
+        return capitalizeToken(lower);
+      }).join(' ');
+    }
+    function toTussenvoegselCase(v) {
+      v = normalizeWhitespace(v);
+      if (!v) return '';
+      return v.split(' ').map(w => w.toLowerCase()).join(' ');
+    }
+
     // --- State
     let gebruikersData = [];
     let gefilterdeGebruikers = [];
@@ -330,8 +361,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
     const clearSearchBtn = document.getElementById('clearSearch');
     const rolFilter = document.getElementById('rolFilter');
-    const clearFiltersBtn = document.getElementById('clearFilters');
-    const clearAllFiltersBtn = document.getElementById('clearAllFilters');
 
     const bulkActionsBar = document.getElementById('bulkActionsBar');
     const selectedCountEl = document.getElementById('selectedCount');
@@ -339,11 +368,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const bulkDeleteBtn = document.getElementById('bulkDelete');
 
     const confirmModal = document.getElementById('confirmModal');
-    const confirmTitle = document.getElementById('confirmTitle');
-    const confirmMessage = document.getElementById('confirmMessage');
     const confirmBtn = document.getElementById('confirmBtn');
-    const closeConfirmModalBtn = document.getElementById('closeConfirmModal');
-    const cancelConfirmBtn = document.getElementById('cancelConfirmBtn');
 
     const successNotification = document.getElementById('successNotification');
     const successMessage = document.getElementById('successMessage');
@@ -352,7 +377,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Header dropdowns (nav)
     const dropdowns = document.querySelectorAll('.dropdown');
     const accountBtn = document.getElementById('accountBtn');
-    const accountMenu = document.getElementById('accountMenu');
+    const accountDropdown = document.querySelector('.account-dropdown');
     dropdowns.forEach(d => {
         const t = d.querySelector('.dropdown-toggle');
         t.addEventListener('click', (e)=>{e.preventDefault();e.stopPropagation();
@@ -360,7 +385,6 @@ document.addEventListener('DOMContentLoaded', function() {
             d.classList.toggle('active');
         });
     });
-    const accountDropdown = document.querySelector('.account-dropdown');
     accountBtn.addEventListener('click', (e)=>{e.preventDefault();e.stopPropagation();accountDropdown.classList.toggle('active');});
     document.addEventListener('click', ()=>{ dropdowns.forEach(d=>d.classList.remove('active')); accountDropdown.classList.remove('active');});
     document.querySelectorAll('.dropdown-menu, .account-menu').forEach(m=>m.addEventListener('click', e=>e.stopPropagation()));
@@ -611,7 +635,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (mode === 'edit') {
             const g = gebruikersData.find(x => x.id === id);
             if (!g) return;
-            modalTitle.textContent = 'Gebruiker bewerken';
+            document.getElementById('modal-title').textContent = 'Gebruiker bewerken';
             modalSaveBtn.textContent = 'Wijzigingen opslaan';
 
             document.getElementById('gebruiker-id').value = g.id;
@@ -620,12 +644,12 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('tussenvoegsel').value = g.tussenvoegsel || '';
             document.getElementById('email').value = g.email || '';
             document.getElementById('gebruikersnaam').value = g.gebruikersnaam || '';
-            document.getElementById('wachtwoord').value = g.wachtwoord || ''; // demo: plaintext; in productie hash en niet tonen
+            document.getElementById('wachtwoord').value = g.wachtwoord || '';
             const rollen = Array.isArray(g.rollen) ? g.rollen : (g.rollen ? [g.rollen] : []);
             setCheckedRollen(rollen);
             updateRollenSummary();
         } else {
-            modalTitle.textContent = 'Nieuwe gebruiker';
+            document.getElementById('modal-title').textContent = 'Nieuwe gebruiker';
             modalSaveBtn.textContent = 'Toevoegen';
         }
         modal.style.display = 'flex';
@@ -672,10 +696,10 @@ document.addEventListener('DOMContentLoaded', function() {
     rolFilter.addEventListener('change', applyFilters);
 
     addBtn.addEventListener('click', ()=>openGebruikerModal('new'));
-    closeModalBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
-    closeConfirmModalBtn.addEventListener('click', ()=>confirmModal.style.display='none');
-    cancelConfirmBtn.addEventListener('click', ()=>confirmModal.style.display='none');
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    document.getElementById('cancelBtn').addEventListener('click', closeModal);
+    document.getElementById('closeConfirmModal').addEventListener('click', ()=>document.getElementById('confirmModal').style.display='none');
+    document.getElementById('cancelConfirmBtn').addEventListener('click', ()=>document.getElementById('confirmModal').style.display='none');
     closeSuccessNotificationBtn.addEventListener('click', ()=>successNotification.style.display='none');
 
     searchInput.addEventListener('input', ()=>{
@@ -688,9 +712,30 @@ document.addEventListener('DOMContentLoaded', function() {
         applyFilters();
     });
 
+    // === Submit handler met normalisatie vóór validatie ===
     gebruikerForm.addEventListener('submit', (e)=>{
         e.preventDefault();
         clearErrors();
+
+        // Normaliseer invoer vóór validatie/opslaan
+        const voornaamEl = document.getElementById('voornaam');
+        const achternaamEl = document.getElementById('achternaam');
+        const tussenvoegselEl = document.getElementById('tussenvoegsel');
+        const emailEl = document.getElementById('email');
+        const gebruikersnaamEl = document.getElementById('gebruikersnaam');
+
+        const normVoornaam = toNameCase(voornaamEl.value, {treatParticlesLower: false});
+        const normAchternaam = toNameCase(achternaamEl.value);
+        const normTussenvoegsel = toTussenvoegselCase(tussenvoegselEl.value);
+
+        voornaamEl.value = normVoornaam;
+        achternaamEl.value = normAchternaam;
+        tussenvoegselEl.value = normTussenvoegsel;
+        emailEl.value = normalizeWhitespace(emailEl.value).toLowerCase();
+        gebruikersnaamEl.value = normalizeWhitespace(gebruikersnaamEl.value);
+        // Als je gebruikersnamen verplicht lowercase wilt:
+        // gebruikersnaamEl.value = gebruikersnaamEl.value.toLowerCase();
+
         const errs = validateForm();
         if (errs.length) { errs.forEach(er => showError(er.id, er.msg)); return; }
 
@@ -699,12 +744,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const id = parseInt(document.getElementById('gebruiker-id').value);
         const data = {
-            voornaam: document.getElementById('voornaam').value.trim(),
-            achternaam: document.getElementById('achternaam').value.trim(),
-            tussenvoegsel: document.getElementById('tussenvoegsel').value.trim(),
-            email: document.getElementById('email').value.trim(),
-            gebruikersnaam: document.getElementById('gebruikersnaam').value.trim(),
-            wachtwoord: document.getElementById('wachtwoord').value, // demo
+            voornaam: voornaamEl.value,
+            achternaam: achternaamEl.value,
+            tussenvoegsel: tussenvoegselEl.value,
+            email: emailEl.value,
+            gebruikersnaam: gebruikersnaamEl.value,
+            wachtwoord: document.getElementById('wachtwoord').value,
             rollen: getCheckedRollen()
         };
 
