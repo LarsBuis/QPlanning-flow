@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Gebruikersbeheer - QPlanning</title>
+    <base href="/" />
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="../medewerkerbeheer.css">
     <style>
@@ -42,7 +43,9 @@
         .form-row { display: flex; flex-wrap: wrap; gap: 1rem; }
         .form-group { flex: 1; min-width: 0; display: flex; flex-direction: column; margin-bottom: 1rem; }
         label { font-size: .9rem; font-weight: 500; color: #374151; margin-bottom: .4rem; }
-        input[type="text"], input[type="email"], input[type="number"], select { border: 1px solid #d1d5db; border-radius: .4rem; padding: .6rem .7rem; font-size: .9rem; background-color: #fff; }
+        input[type="text"], input[type="email"], input[type="number"], input[type="password"], select {
+            border: 1px solid #d1d5db; border-radius: .4rem; padding: .6rem .7rem; font-size: .9rem; background-color: #fff;
+        }
 
         .form-info { display: flex; justify-content: flex-end; padding: .25rem 1.25rem 0 1.25rem; }
         .form-info small em { font-style: normal; color: #6b7280; }
@@ -55,7 +58,7 @@
         .modal-body { padding: 1rem 1.25rem; overflow-y: auto; }
         .modal-close { background: none; border: 0; font-size: 1.25rem; line-height: 1; cursor: pointer; color: #6b7280; }
 
-        /* === Multiselect (checkbox dropdown) === */
+        /* === Multiselect (checkbox dropdown) voor Rollen === */
         .multiselect { position: relative; }
         .multiselect-toggle{
           width: 100%;
@@ -86,7 +89,7 @@
         .multiselect-panel .option:hover{ background: #f3f4f6; }
         .multiselect-panel input[type="checkbox"]{ width: 16px; height: 16px; }
 
-        #planbaarSummary{ overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        #rollenSummary{ overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     </style>
 </head>
 <body>
@@ -110,7 +113,7 @@
                         <ul class="dropdown-menu">
                             <li><a href="/klanten/klant.html" class="dropdown-link">Klanten beheren</a></li>
                             <li><a href="/Medewerker/medewerkerbeheer.html" class="dropdown-link">Medewerkers beheren</a></li>
-                            <li><a href="/Gebruikers/gebruikers.html" class="dropdown-link active">Gebruikers beheren</a></li>
+                            <li><a href="/Gebruikers/Gebruikers.html" class="dropdown-link active">Gebruikers beheren</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -144,15 +147,12 @@
 
         <div class="filters-section">
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Zoek op naam, e-mail, functie..." class="search-input">
+                <input type="text" id="searchInput" placeholder="Zoek op naam, e-mail, gebruikersnaam..." class="search-input">
                 <button class="search-clear" id="clearSearch" title="Zoekopdracht wissen" style="display:none;">×</button>
             </div>
             <div class="filter-options">
-                <select id="functieFilter" class="filter-select">
-                    <option value="">Alle Functies</option>
-                </select>
-                <select id="teamFilter" class="filter-select">
-                    <option value="">Alle Teams</option>
+                <select id="rolFilter" class="filter-select">
+                    <option value="">Alle Rollen</option>
                 </select>
                 <button class="btn btn-secondary" id="clearFilters">Filters wissen</button>
             </div>
@@ -172,11 +172,9 @@
                         <th class="select-column"><input type="checkbox" id="selectAllCheckbox" class="select-checkbox"></th>
                         <th>Naam</th>
                         <th>E-mail</th>
-                        <th>Tarief</th>
-                        <th>Functie</th>
-                        <th>Team</th>
-                        <th>Planbaar door teams</th>
-                        <th>Acties</th>
+                        <th>Gebruikersnaam</th>
+                        <th>Rollen</th>
+                        
                     </tr>
                 </thead>
                 <tbody id="gebruikers-tabel-body"></tbody>
@@ -215,80 +213,59 @@
                     <div class="error-message" id="voornaamError"></div>
                 </div>
                 <div class="form-group">
-                    <label for="tussenvoegsel">Tussenvoegsel</label>
-                    <input type="text" id="tussenvoegsel" name="tussenvoegsel" placeholder="(optioneel)">
-                    <div class="error-message" id="tussenvoegselError"></div>
-                </div>
-                <div class="form-group">
                     <label for="achternaam">Achternaam *</label>
                     <input type="text" id="achternaam" name="achternaam" placeholder="Bijv. Jansen" required>
                     <div class="error-message" id="achternaamError"></div>
                 </div>
-            </div>
-
-            <div class="form-group">
-                <label for="email">E-mail *</label>
-                <input type="email" id="email" name="email" placeholder="bijv. jan.jansen@qplanning.nl" required>
-                <div class="error-message" id="emailError"></div>
+                <div class="form-group">
+                    <label for="tussenvoegsel">Tussenvoegsel</label>
+                    <input type="text" id="tussenvoegsel" name="tussenvoegsel" placeholder="(optioneel)">
+                    <div class="error-message" id="tussenvoegselError"></div>
+                </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="tarief">Tarief (€) *</label>
-                    <input type="number" id="tarief" name="tarief" placeholder="Bijv. 85" step="0.01" min="0" required>
-                    <div class="error-message" id="tariefError"></div>
+                    <label for="email">E-mail *</label>
+                    <input type="email" id="email" name="email" placeholder="bijv. jan.jansen@qplanning.nl" required>
+                    <div class="error-message" id="emailError"></div>
                 </div>
                 <div class="form-group">
-                    <label for="functie">Functie *</label>
-                    <select id="functie" name="functie" required>
-                        <option value="" disabled selected>Selecteer...</option>
-                        <option value="Consultant">Consultant</option>
-                        <option value="Senior Consultant">Senior Consultant</option>
-                        <option value="Manager">Manager</option>
-                        <option value="Partner">Partner</option>
-                        <option value="Planner">Planner</option>
-                    </select>
-                    <div class="error-message" id="functieError"></div>
+                    <label for="gebruikersnaam">Gebruikersnaam *</label>
+                    <input type="text" id="gebruikersnaam" name="gebruikersnaam" placeholder="bijv. jjansen" required>
+                    <div class="error-message" id="gebruikersnaamError"></div>
                 </div>
                 <div class="form-group">
-                    <label for="team">Team *</label>
-                    <select id="team" name="team" required>
-                        <option value="" disabled selected>Selecteer...</option>
-                        <option value="Limburg">Limburg</option>
-                        <option value="Utrecht">Utrecht</option>
-                        <option value="Rotterdam">Rotterdam</option>
-                        <option value="Team Audit A">Team Audit A</option>
-                        <option value="Team Accountancy">Team Accountancy</option>
-                    </select>
-                    <div class="error-message" id="teamError"></div>
+                    <label for="wachtwoord">Wachtwoord *</label>
+                    <input type="password" id="wachtwoord" name="wachtwoord" placeholder="Min. 8 tekens" required>
+                    <div class="error-message" id="wachtwoordError"></div>
                 </div>
             </div>
 
-            <!-- Multiselect dropdown voor planbaarheid -->
+            <!-- Multiselect dropdown voor Rollen -->
             <div class="form-group">
-                <label>Planbaar door teams *</label>
+                <label>Rollen *</label>
 
-                <div class="multiselect" id="planbaarTeams">
-                    <button type="button" class="multiselect-toggle" id="planbaarToggle"
+                <div class="multiselect" id="rollenSelect">
+                    <button type="button" class="multiselect-toggle" id="rollenToggle"
                         aria-expanded="false" aria-haspopup="listbox">
-                        <span id="planbaarSummary">Selecteer teams…</span>
+                        <span id="rollenSummary">Selecteer rollen…</span>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <polyline points="6 9 12 15 18 9"></polyline>
                         </svg>
                     </button>
 
-                    <div class="multiselect-panel" id="planbaarPanel" role="listbox" aria-multiselectable="true">
-                        <label class="option"><input type="checkbox" value="Limburg"><span>Limburg</span></label>
-                        <label class="option"><input type="checkbox" value="Utrecht"><span>Utrecht</span></label>
-                        <label class="option"><input type="checkbox" value="Rotterdam"><span>Rotterdam</span></label>
-                        <label class="option"><input type="checkbox" value="Team Audit A"><span>Team&nbsp;Audit&nbsp;A</span></label>
-                        <label class="option"><input type="checkbox" value="Team Audit B"><span>Team&nbsp;Audit&nbsp;B</span></label>
-                        <label class="option"><input type="checkbox" value="Team Accountancy"><span>Team&nbsp;Accountancy</span></label>
+                    <div class="multiselect-panel" id="rollenPanel" role="listbox" aria-multiselectable="true">
+                        <label class="option"><input type="checkbox" value="Admin"><span>Admin</span></label>
+                        <label class="option"><input type="checkbox" value="Manager"><span>Manager</span></label>
+                        <label class="option"><input type="checkbox" value="Planner"><span>Planner</span></label>
+                        <label class="option"><input type="checkbox" value="Medewerker"><span>Medewerker</span></label>
+                        <label class="option"><input type="checkbox" value="Gast"><span>Gast</span></label>
                     </div>
                 </div>
 
-                <div class="error-message" id="planbaarTeamsError"></div>
+                <div class="error-message" id="rollenSelectError"></div>
             </div>
         </form>
 
@@ -333,11 +310,42 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // --- Normalisatie helpers (naam/tussenvoegsel/email) ---
+    function normalizeWhitespace(str) {
+      return (str || '').replace(/\s+/g, ' ').trim();
+    }
+    const DUTCH_PARTICLES = new Set([
+      'de','den','der','van','het','te','ten','ter','op','aan','bij','uit','in','von','vom','am','auf'
+    ]);
+    function capitalizeToken(token) {
+      return token.split(/([-’'–—])/).map((part) => {
+        if (/^[-’'–—]$/.test(part)) return part;
+        if (!part) return part;
+        return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+      }).join('');
+    }
+    function toNameCase(full, {treatParticlesLower = true} = {}) {
+      full = normalizeWhitespace(full);
+      if (!full) return '';
+      const words = full.split(' ');
+      return words.map((w, i) => {
+        const lower = w.toLowerCase();
+        if (i === 0) return capitalizeToken(lower);
+        if (treatParticlesLower && DUTCH_PARTICLES.has(lower)) return lower;
+        return capitalizeToken(lower);
+      }).join(' ');
+    }
+    function toTussenvoegselCase(v) {
+      v = normalizeWhitespace(v);
+      if (!v) return '';
+      return v.split(' ').map(w => w.toLowerCase()).join(' ');
+    }
+
     // --- State
     let gebruikersData = [];
     let gefilterdeGebruikers = [];
     let geselecteerdeIds = new Set();
-    const storageKey = 'qplanning_gebruikers_v1';
+    const storageKey = 'qplanning_gebruikers_v2';
 
     // DOM
     const tabelBody = document.getElementById('gebruikers-tabel-body');
@@ -352,10 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const searchInput = document.getElementById('searchInput');
     const clearSearchBtn = document.getElementById('clearSearch');
-    const functieFilter = document.getElementById('functieFilter');
-    const teamFilter = document.getElementById('teamFilter');
-    const clearFiltersBtn = document.getElementById('clearFilters');
-    const clearAllFiltersBtn = document.getElementById('clearAllFilters');
+    const rolFilter = document.getElementById('rolFilter');
 
     const bulkActionsBar = document.getElementById('bulkActionsBar');
     const selectedCountEl = document.getElementById('selectedCount');
@@ -363,11 +368,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const bulkDeleteBtn = document.getElementById('bulkDelete');
 
     const confirmModal = document.getElementById('confirmModal');
-    const confirmTitle = document.getElementById('confirmTitle');
-    const confirmMessage = document.getElementById('confirmMessage');
     const confirmBtn = document.getElementById('confirmBtn');
-    const closeConfirmModalBtn = document.getElementById('closeConfirmModal');
-    const cancelConfirmBtn = document.getElementById('cancelConfirmBtn');
 
     const successNotification = document.getElementById('successNotification');
     const successMessage = document.getElementById('successMessage');
@@ -376,7 +377,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Header dropdowns (nav)
     const dropdowns = document.querySelectorAll('.dropdown');
     const accountBtn = document.getElementById('accountBtn');
-    const accountMenu = document.getElementById('accountMenu');
+    const accountDropdown = document.querySelector('.account-dropdown');
     dropdowns.forEach(d => {
         const t = d.querySelector('.dropdown-toggle');
         t.addEventListener('click', (e)=>{e.preventDefault();e.stopPropagation();
@@ -384,18 +385,11 @@ document.addEventListener('DOMContentLoaded', function() {
             d.classList.toggle('active');
         });
     });
-    const accountDropdown = document.querySelector('.account-dropdown');
     accountBtn.addEventListener('click', (e)=>{e.preventDefault();e.stopPropagation();accountDropdown.classList.toggle('active');});
     document.addEventListener('click', ()=>{ dropdowns.forEach(d=>d.classList.remove('active')); accountDropdown.classList.remove('active');});
     document.querySelectorAll('.dropdown-menu, .account-menu').forEach(m=>m.addEventListener('click', e=>e.stopPropagation()));
 
     // Helpers
-    function formatCurrency(value) {
-        if (value === null || value === undefined || value === '') return '-';
-        const num = parseFloat(value);
-        if (isNaN(num)) return '-';
-        return '€ ' + num.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
     function fullName(g) { return [g.voornaam, g.tussenvoegsel, g.achternaam].filter(Boolean).join(' '); }
     function saveGebruikers() { localStorage.setItem(storageKey, JSON.stringify(gebruikersData)); }
 
@@ -417,68 +411,59 @@ document.addEventListener('DOMContentLoaded', function() {
         applyFilters();
     }
 
-    // === Multiselect (Planbaar door teams) ===
-    const planbaarWrapper = document.getElementById('planbaarTeams');
-    const planbaarToggle = document.getElementById('planbaarToggle');
-    const planbaarPanel  = document.getElementById('planbaarPanel');
-    const planbaarSummary= document.getElementById('planbaarSummary');
+    // === Multiselect (Rollen) ===
+    const rollenWrapper = document.getElementById('rollenSelect');
+    const rollenToggle = document.getElementById('rollenToggle');
+    const rollenPanel  = document.getElementById('rollenPanel');
+    const rollenSummary= document.getElementById('rollenSummary');
 
-    function openPlanbaar(){ planbaarWrapper.classList.add('open'); planbaarToggle.setAttribute('aria-expanded','true'); }
-    function closePlanbaar(){ planbaarWrapper.classList.remove('open'); planbaarToggle.setAttribute('aria-expanded','false'); }
-    function togglePlanbaar(){ planbaarWrapper.classList.contains('open') ? closePlanbaar() : openPlanbaar(); }
+    function openRollen(){ rollenWrapper.classList.add('open'); rollenToggle.setAttribute('aria-expanded','true'); }
+    function closeRollen(){ rollenWrapper.classList.remove('open'); rollenToggle.setAttribute('aria-expanded','false'); }
+    function toggleRollen(){ rollenWrapper.classList.contains('open') ? closeRollen() : openRollen(); }
 
-    function getCheckedTeams() {
-      const boxen = document.querySelectorAll('#planbaarPanel input[type="checkbox"]');
+    function getCheckedRollen() {
+      const boxen = document.querySelectorAll('#rollenPanel input[type="checkbox"]');
       return Array.from(boxen).filter(b => b.checked).map(b => b.value);
     }
-    function setCheckedTeams(values = []) {
+    function setCheckedRollen(values = []) {
       const set = new Set(values);
-      const boxen = document.querySelectorAll('#planbaarPanel input[type="checkbox"]');
+      const boxen = document.querySelectorAll('#rollenPanel input[type="checkbox"]');
       boxen.forEach(b => { b.checked = set.has(b.value); });
-      updatePlanbaarSummary();
+      updateRollenSummary();
     }
-    function updatePlanbaarSummary(){
-      const sel = getCheckedTeams();
-      if (sel.length === 0) planbaarSummary.textContent = 'Selecteer teams…';
-      else if (sel.length <= 3) planbaarSummary.textContent = sel.join(', ');
-      else planbaarSummary.textContent = `${sel.length} teams geselecteerd`;
+    function updateRollenSummary(){
+      const sel = getCheckedRollen();
+      if (sel.length === 0) rollenSummary.textContent = 'Selecteer rollen…';
+      else if (sel.length <= 3) rollenSummary.textContent = sel.join(', ');
+      else rollenSummary.textContent = `${sel.length} rollen geselecteerd`;
     }
-
-    planbaarToggle.addEventListener('click', (e)=>{ e.stopPropagation(); togglePlanbaar(); });
-    planbaarPanel.addEventListener('click', (e)=>{
-      const target = e.target;
-      if (target && target.type === 'checkbox') updatePlanbaarSummary();
+    rollenToggle.addEventListener('click', (e)=>{ e.stopPropagation(); toggleRollen(); });
+    rollenPanel.addEventListener('click', (e)=>{
+      if (e.target && e.target.type === 'checkbox') updateRollenSummary();
     });
-    document.addEventListener('click', (e)=>{ if (!planbaarWrapper.contains(e.target)) closePlanbaar(); });
-    document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') closePlanbaar(); });
+    document.addEventListener('click', (e)=>{ if (!rollenWrapper.contains(e.target)) closeRollen(); });
+    document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') closeRollen(); });
 
     // Filters
     function populateFilters() {
-        const functies = new Set(gebruikersData.map(g => g.functie).filter(Boolean));
-        const teams = new Set(gebruikersData.map(g => g.team).filter(Boolean));
-
-        functieFilter.innerHTML = '<option value="">Alle Functies</option>';
-        functies.forEach(f => functieFilter.add(new Option(f, f)));
-
-        teamFilter.innerHTML = '<option value="">Alle Teams</option>';
-        teams.forEach(t => teamFilter.add(new Option(t, t)));
+        const rollen = new Set( gebruikersData.flatMap(g => Array.isArray(g.rollen) ? g.rollen : (g.rollen ? [g.rollen] : []) ) );
+        rolFilter.innerHTML = '<option value="">Alle Rollen</option>';
+        Array.from(rollen).sort().forEach(r => rolFilter.add(new Option(r, r)));
     }
 
     function applyFilters() {
         const term = (searchInput.value || '').toLowerCase();
-        const functie = functieFilter.value;
-        const team = teamFilter.value;
+        const rol = rolFilter.value;
 
         gefilterdeGebruikers = gebruikersData.filter(g => {
             const tMatch = !term ||
                 fullName(g).toLowerCase().includes(term) ||
                 (g.email || '').toLowerCase().includes(term) ||
-                (g.functie || '').toLowerCase().includes(term);
+                (g.gebruikersnaam || '').toLowerCase().includes(term);
 
-            const fMatch = !functie || g.functie === functie;
-            const teamMatch = !team || g.team === team;
+            const rMatch = !rol || (Array.isArray(g.rollen) ? g.rollen.includes(rol) : g.rollen === rol);
 
-            return tMatch && fMatch && teamMatch;
+            return tMatch && rMatch;
         });
 
         renderTabel();
@@ -502,7 +487,7 @@ document.addEventListener('DOMContentLoaded', function() {
         gefilterdeGebruikers.forEach(g => {
             const tr = document.createElement('tr');
             const checked = geselecteerdeIds.has(g.id);
-            const planbaar = Array.isArray(g.planbaarDoorTeams) ? g.planbaarDoorTeams.join(', ') : (g.planbaarDoorTeams || '-');
+            const rollenText = Array.isArray(g.rollen) ? g.rollen.join(', ') : (g.rollen || '-');
 
             tr.innerHTML = `
                 <td class="select-column">
@@ -510,10 +495,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 </td>
                 <td data-label="Naam">${fullName(g) || '-'}</td>
                 <td data-label="E-mail">${g.email || '-'}</td>
-                <td data-label="Tarief">${formatCurrency(g.tarief)}</td>
-                <td data-label="Functie">${g.functie || '-'}</td>
-                <td data-label="Team">${g.team || '-'}</td>
-                <td data-label="Planbaar door teams">${planbaar}</td>
+                <td data-label="Gebruikersnaam">${g.gebruikersnaam || '-'}</td>
+                <td data-label="Rollen">${rollenText}</td>
                 <td class="actions">
                     <div class="action-buttons">
                         <button class="btn-action btn-edit" data-id="${g.id}" title="Bewerken">
@@ -593,22 +576,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Errors
     function clearErrors() {
-        ['voornaam','tussenvoegsel','achternaam','email','tarief','functie','team','planbaarTeams']
+        ['voornaam','achternaam','tussenvoegsel','email','gebruikersnaam','wachtwoord','rollenSelect']
             .forEach(id => {
                 const el = document.getElementById(id);
-                const err = document.getElementById(id + 'Error');
+                const errEl = document.getElementById(id + 'Error') || document.getElementById('rollenSelectError');
                 if (el) el.classList.remove('error');
-                if (err) { err.textContent=''; err.classList.remove('show'); }
-                // ook wrapper-class voor multiselect verwijderen
-                if (id === 'planbaarTeams') document.getElementById('planbaarTeams').classList.remove('error');
+                if (errEl) { errEl.textContent=''; errEl.classList.remove('show'); }
+                if (id === 'rollenSelect') document.getElementById('rollenSelect').classList.remove('error');
             });
     }
     function showError(id, msg) {
         const el = document.getElementById(id);
-        const err = document.getElementById(id + 'Error');
+        const err = document.getElementById(id + 'Error') || (id === 'rollenSelect' ? document.getElementById('rollenSelectError') : null);
         if (el) el.classList.add('error');
         if (err) { err.textContent = msg; err.classList.add('show'); }
-        if (id === 'planbaarTeams') document.getElementById('planbaarTeams').classList.add('error');
+        if (id === 'rollenSelect') document.getElementById('rollenSelect').classList.add('error');
     }
 
     // Validatie
@@ -617,9 +599,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const voornaam = document.getElementById('voornaam').value.trim();
         const achternaam = document.getElementById('achternaam').value.trim();
         const email = document.getElementById('email').value.trim();
-        const tariefStr = document.getElementById('tarief').value.trim();
-        const functie = document.getElementById('functie').value;
-        const team = document.getElementById('team').value;
+        const gebruikersnaam = document.getElementById('gebruikersnaam').value.trim();
+        const wachtwoord = document.getElementById('wachtwoord').value;
 
         if (!voornaam) errors.push({id:'voornaam', msg:'Voornaam is verplicht.'});
         if (voornaam && voornaam.length < 2) errors.push({id:'voornaam', msg:'Voornaam moet minimaal 2 karakters zijn.'});
@@ -632,14 +613,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!re.test(email)) errors.push({id:'email', msg:'Voer een geldig e-mailadres in.'});
         }
 
-        if (tariefStr === '') errors.push({id:'tarief', msg:'Tarief is verplicht.'});
-        else if (isNaN(parseFloat(tariefStr)) || parseFloat(tariefStr) < 0) errors.push({id:'tarief', msg:'Tarief moet 0 of hoger zijn.'});
+        if (!gebruikersnaam) errors.push({id:'gebruikersnaam', msg:'Gebruikersnaam is verplicht.'});
+        if (!wachtwoord) errors.push({id:'wachtwoord', msg:'Wachtwoord is verplicht.'});
+        else if (wachtwoord.length < 8) errors.push({id:'wachtwoord', msg:'Wachtwoord moet minimaal 8 tekens zijn.'});
 
-        if (!functie) errors.push({id:'functie', msg:'Functie is verplicht.'});
-        if (!team) errors.push({id:'team', msg:'Team is verplicht.'});
-
-        const selectedTeams = getCheckedTeams();
-        if (selectedTeams.length === 0) errors.push({id:'planbaarTeams', msg:'Selecteer minimaal één team.'});
+        const rollen = getCheckedRollen();
+        if (rollen.length === 0) errors.push({id:'rollenSelect', msg:'Selecteer minimaal één rol.'});
 
         return errors;
     }
@@ -649,32 +628,28 @@ document.addEventListener('DOMContentLoaded', function() {
         clearErrors();
         gebruikerForm.reset();
         document.getElementById('gebruiker-id').value = '';
-        setCheckedTeams([]); // reset selectie
-        updatePlanbaarSummary();
-        closePlanbaar();
+        setCheckedRollen([]); // reset
+        updateRollenSummary();
+        closeRollen();
 
         if (mode === 'edit') {
             const g = gebruikersData.find(x => x.id === id);
             if (!g) return;
-            modalTitle.textContent = 'Gebruiker bewerken';
+            document.getElementById('modal-title').textContent = 'Gebruiker bewerken';
             modalSaveBtn.textContent = 'Wijzigingen opslaan';
 
             document.getElementById('gebruiker-id').value = g.id;
             document.getElementById('voornaam').value = g.voornaam || '';
-            document.getElementById('tussenvoegsel').value = g.tussenvoegsel || '';
             document.getElementById('achternaam').value = g.achternaam || '';
+            document.getElementById('tussenvoegsel').value = g.tussenvoegsel || '';
             document.getElementById('email').value = g.email || '';
-            document.getElementById('tarief').value = g.tarief ?? '';
-            if (g.functie) document.getElementById('functie').value = g.functie;
-            if (g.team) document.getElementById('team').value = g.team;
-
-            const values = Array.isArray(g.planbaarDoorTeams)
-                ? g.planbaarDoorTeams
-                : (g.planbaarDoorTeams ? g.planbaarDoorTeams.split(',').map(s => s.trim()) : []);
-            setCheckedTeams(values);
-            updatePlanbaarSummary();
+            document.getElementById('gebruikersnaam').value = g.gebruikersnaam || '';
+            document.getElementById('wachtwoord').value = g.wachtwoord || '';
+            const rollen = Array.isArray(g.rollen) ? g.rollen : (g.rollen ? [g.rollen] : []);
+            setCheckedRollen(rollen);
+            updateRollenSummary();
         } else {
-            modalTitle.textContent = 'Nieuwe gebruiker';
+            document.getElementById('modal-title').textContent = 'Nieuwe gebruiker';
             modalSaveBtn.textContent = 'Toevoegen';
         }
         modal.style.display = 'flex';
@@ -683,15 +658,16 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.style.display = 'none';
         clearErrors();
         gebruikerForm.reset();
-        setCheckedTeams([]);
-        updatePlanbaarSummary();
-        closePlanbaar();
+        setCheckedRollen([]);
+        updateRollenSummary();
+        closeRollen();
     }
 
     // Confirm + toast
     function showConfirmDelete(ids, naam) {
-        confirmTitle.textContent = 'Gebruiker(s) verwijderen';
-        confirmMessage.textContent = `Weet je zeker dat je ${naam} wilt verwijderen?`;
+        const title = ids.length > 1 ? 'Gebruikers verwijderen' : 'Gebruiker verwijderen';
+        document.getElementById('confirmTitle').textContent = title;
+        document.getElementById('confirmMessage').textContent = `Weet je zeker dat je ${naam} wilt verwijderen?`;
         confirmModal.style.display = 'flex';
         confirmBtn.onclick = () => { handleDelete(ids); confirmModal.style.display = 'none'; };
     }
@@ -710,22 +686,56 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Events
+    document.getElementById('clearFilters').addEventListener('click', ()=>{
+        searchInput.value = '';
+        clearSearchBtn.style.display = 'none';
+        rolFilter.value='';
+        applyFilters();
+    });
+    document.getElementById('clearAllFilters').addEventListener('click', ()=> document.getElementById('clearFilters').click());
+    rolFilter.addEventListener('change', applyFilters);
+
     addBtn.addEventListener('click', ()=>openGebruikerModal('new'));
-    closeModalBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
-    closeConfirmModalBtn.addEventListener('click', ()=>confirmModal.style.display='none');
-    cancelConfirmBtn.addEventListener('click', ()=>confirmModal.style.display='none');
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    document.getElementById('cancelBtn').addEventListener('click', closeModal);
+    document.getElementById('closeConfirmModal').addEventListener('click', ()=>document.getElementById('confirmModal').style.display='none');
+    document.getElementById('cancelConfirmBtn').addEventListener('click', ()=>document.getElementById('confirmModal').style.display='none');
     closeSuccessNotificationBtn.addEventListener('click', ()=>successNotification.style.display='none');
 
-    searchInput.addEventListener('input', ()=>{ clearSearchBtn.style.display = searchInput.value ? 'block' : 'none'; applyFilters(); });
-    clearSearchBtn.addEventListener('click', ()=>{ searchInput.value = ''; clearSearchBtn.style.display = 'none'; applyFilters(); });
-    [functieFilter, teamFilter].forEach(el => el.addEventListener('change', applyFilters));
-    clearFiltersBtn.addEventListener('click', ()=>{ searchInput.value = ''; clearSearchBtn.style.display = 'none'; functieFilter.value = ''; teamFilter.value = ''; applyFilters(); });
-    clearAllFiltersBtn.addEventListener('click', ()=> clearFiltersBtn.click());
+    searchInput.addEventListener('input', ()=>{
+        clearSearchBtn.style.display = searchInput.value ? 'block' : 'none';
+        applyFilters();
+    });
+    clearSearchBtn.addEventListener('click', ()=>{
+        searchInput.value = '';
+        clearSearchBtn.style.display = 'none';
+        applyFilters();
+    });
 
+    // === Submit handler met normalisatie vóór validatie ===
     gebruikerForm.addEventListener('submit', (e)=>{
         e.preventDefault();
         clearErrors();
+
+        // Normaliseer invoer vóór validatie/opslaan
+        const voornaamEl = document.getElementById('voornaam');
+        const achternaamEl = document.getElementById('achternaam');
+        const tussenvoegselEl = document.getElementById('tussenvoegsel');
+        const emailEl = document.getElementById('email');
+        const gebruikersnaamEl = document.getElementById('gebruikersnaam');
+
+        const normVoornaam = toNameCase(voornaamEl.value, {treatParticlesLower: false});
+        const normAchternaam = toNameCase(achternaamEl.value);
+        const normTussenvoegsel = toTussenvoegselCase(tussenvoegselEl.value);
+
+        voornaamEl.value = normVoornaam;
+        achternaamEl.value = normAchternaam;
+        tussenvoegselEl.value = normTussenvoegsel;
+        emailEl.value = normalizeWhitespace(emailEl.value).toLowerCase();
+        gebruikersnaamEl.value = normalizeWhitespace(gebruikersnaamEl.value);
+        // Als je gebruikersnamen verplicht lowercase wilt:
+        // gebruikersnaamEl.value = gebruikersnaamEl.value.toLowerCase();
+
         const errs = validateForm();
         if (errs.length) { errs.forEach(er => showError(er.id, er.msg)); return; }
 
@@ -734,14 +744,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const id = parseInt(document.getElementById('gebruiker-id').value);
         const data = {
-            voornaam: document.getElementById('voornaam').value.trim(),
-            tussenvoegsel: document.getElementById('tussenvoegsel').value.trim(),
-            achternaam: document.getElementById('achternaam').value.trim(),
-            email: document.getElementById('email').value.trim(),
-            tarief: document.getElementById('tarief').value.trim(),
-            functie: document.getElementById('functie').value,
-            team: document.getElementById('team').value,
-            planbaarDoorTeams: getCheckedTeams()
+            voornaam: voornaamEl.value,
+            achternaam: achternaamEl.value,
+            tussenvoegsel: tussenvoegselEl.value,
+            email: emailEl.value,
+            gebruikersnaam: gebruikersnaamEl.value,
+            wachtwoord: document.getElementById('wachtwoord').value,
+            rollen: getCheckedRollen()
         };
 
         setTimeout(()=>{
@@ -760,12 +769,12 @@ document.addEventListener('DOMContentLoaded', function() {
             closeModal();
             modalSaveBtn.classList.remove('loading');
             modalSaveBtn.disabled = false;
-        }, 300);
+        }, 250);
     });
 
     // Opstart
     setupBulkSelection();
-    updatePlanbaarSummary();
+    updateRollenSummary();
     laadGebruikers();
 });
 </script>
