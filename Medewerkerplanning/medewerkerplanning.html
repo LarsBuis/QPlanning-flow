@@ -25,6 +25,7 @@
         .medewerker-row td {
             font-weight: 600;
             background: #f9fafb;
+            border-top: 2px solid #e5e7eb;
         }
 
         .klant-row td:first-child {
@@ -37,9 +38,99 @@
             background: #fff;
         }
 
-        /* optische scheiding tussen medewerkers */
-        .medewerker-row td {
-            border-top: 2px solid #e5e7eb;
+        /* totaal rij onderaan */
+        .totaal-row td {
+            background: #eef2ff;
+            font-weight: 600;
+            border-top: 2px solid #6366f1;
+            color: #1e1e2f;
+        }
+        .totaal-row td:first-child {
+            font-weight: 700;
+        }
+
+        /* ---- zoekbalk stijl zoals klant.html ---- */
+        .filters-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 220px;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: .4rem;
+            padding: .6rem .75rem;
+            font-size: .9rem;
+        }
+
+        .search-clear {
+            position: absolute;
+            top: 50%;
+            right: .5rem;
+            transform: translateY(-50%);
+            background: #e5e7eb;
+            border: 1px solid #9ca3af;
+            border-radius: .3rem;
+            font-size: .8rem;
+            line-height: 1;
+            padding: .25rem .4rem;
+            cursor: pointer;
+            color: #374151;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #6b7280;
+            display: none;
+        }
+        .no-results-icon {
+            font-size: 2rem;
+            margin-bottom: .5rem;
+        }
+        .no-results h3 {
+            margin: 0 0 .25rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #374151;
+        }
+        .no-results p {
+            margin: 0 0 1rem;
+            font-size: .9rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            border: 0;
+            border-radius: .4rem;
+            font-size: .9rem;
+            line-height: 1.2;
+            font-weight: 500;
+            cursor: pointer;
+            padding: .6rem .8rem;
+        }
+
+        .btn-secondary {
+            background-color: #f3f4f6;
+            color: #111827;
+            border: 1px solid #d1d5db;
+        }
+
+        .table-container {
+            overflow-x: auto;
         }
     </style>
 </head>
@@ -60,7 +151,7 @@
                         <ul class="dropdown-menu">
                             <li><a href="/Boekingen/BoekingOverzicht.html" class="dropdown-link">Boekingen</a></li>
                             <li><a href="#" class="dropdown-link">Klantenplanning</a></li>
-                            <li><a href="/Medewerkerplanning/medewerkerplanning.html" class="dropdown-link">Medewerkerplanning</a></li>
+                            <li><a href="#" class="dropdown-link">Medewerkerplanning</a></li>
                         </ul>
                     </li>
 
@@ -69,7 +160,7 @@
                         <ul class="dropdown-menu">
                             <li><a href="/klanten/klant.html" class="dropdown-link">Klanten beheren</a></li>
                             <li><a href="/Medewerker/medewerkerbeheer.html" class="dropdown-link">Medewerkers beheren</a></li>
-                            <li><a href="/" class="dropdown-link">Gebruikers beheren</a></li>
+                            <li><a href="#" class="dropdown-link">Gebruikers beheren</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -96,7 +187,7 @@
 <main class="main-content">
     <div class="content-container">
         <div class="page-header">
-            <h2>Overzicht geplande uren</h2>
+            <h2>Medewerkerplanning</h2>
         </div>
 
         <div class="week-navigation">
@@ -105,15 +196,40 @@
             <button class="btn btn-secondary" id="nextPage">Volgende pagina</button>
         </div>
 
-        <div class="table-container">
+        <!-- Zoekbalk -->
+        <div class="filters-section">
+            <div class="search-box">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Zoek op medewerker of klant..."
+                    class="search-input"
+                >
+                <button
+                    class="search-clear"
+                    id="clearSearch"
+                    title="Zoekopdracht wissen"
+                    style="display: none;"
+                >×</button>
+            </div>
+        </div>
+
+        <div class="table-container" id="tableContainer">
             <table class="data-table" id="planningTable">
                 <thead>
                     <tr id="tableHeadRow">
-                        <th>Naam medewerker / Klant</th>
+                        <th>Medewerker / Klant</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
             </table>
+        </div>
+
+        <div class="no-results" id="noResults">
+            <div class="no-results-icon">🔍</div>
+            <h3>Geen resultaten</h3>
+            <p>Er is geen planning gevonden die overeenkomt met je zoekopdracht.</p>
+            <button class="btn btn-secondary" id="clearAllFilters">Zoekopdracht wissen</button>
         </div>
     </div>
 </main>
@@ -159,20 +275,7 @@
         });
     });
 
-    // ---- PLANNING DATA ----
-    // Datastructuur:
-    // [
-    //   {
-    //     medewerker: "Jan Jansen",
-    //     klanten: [
-    //       { klant: "Groot Bedrijf BV", urenPerWeek: { 1: 6, 2: 4, ... } },
-    //       { klant: "Tech Solutions NL", urenPerWeek: { ... } }
-    //     ]
-    //   },
-    //   ...
-    // ]
-    //
-    // Hier staan demo-data. Je kunt dit straks vervangen door echte planning uit je backend.
+    // ---- PLANNING DATA (demo) ----
     const planningData = [
         {
             medewerker: "Jan Jansen",
@@ -180,19 +283,45 @@
                 { klant: "Groot Bedrijf BV", urenPerWeek: {} },
                 { klant: "Tech Solutions NL", urenPerWeek: {} }
             ]
+        },
+        {
+            medewerker: "Pieter Smit",
+            klanten: [
+                { klant: "LogiTrans Europe", urenPerWeek: {} },
+                { klant: "Retail Experts BV", urenPerWeek: {} }
+            ]
+        },
+        {
+            medewerker: "Marieke de Vries",
+            klanten: [
+                { klant: "GreenFuture Holding", urenPerWeek: {} }
+            ]
+        },
+        {
+            medewerker: "Lisa van Dijk",
+            klanten: [
+                { klant: "Retail Experts BV", urenPerWeek: {} },
+                { klant: "City Finance Group", urenPerWeek: {} }
+            ]
+        },
+        {
+            medewerker: "Ahmed El Amrani",
+            klanten: [
+                { klant: "Groot Bedrijf BV", urenPerWeek: {} },
+                { klant: "City Finance Group", urenPerWeek: {} }
+            ]
         }
     ];
 
     // Helper: random uren voor demo
     function generateRandomHours() {
-        // aantal uur in een week op een specifieke klant voor een medewerker
         // random 0 t/m 8 uur
         return Math.floor(Math.random() * 9);
     }
 
     // Voor elk zichtbaar weeknummer uren invullen als ze er nog niet zijn
-    function fillWeekHoursForRange(startWeek, endWeek) {
-        planningData.forEach(medewerker => {
+    function fillWeekHoursForRange(startWeek, endWeek, dataSet) {
+        dataSet.forEach(medewerker => {
             medewerker.klanten.forEach(entry => {
                 for (let w = startWeek; w <= endWeek; w++) {
                     if (entry.urenPerWeek[w] === undefined) {
@@ -208,21 +337,65 @@
     const weeksPerPage = 5;
     let currentPage = 0;
 
+    // zoek/filter state
+    let filteredData = [...planningData];
+
+    // ---- FILTER LOGICA ----
+    function applySearchFilter() {
+        const searchValue = document.getElementById("searchInput").value.trim().toLowerCase();
+
+        if (!searchValue) {
+            filteredData = [...planningData];
+            return;
+        }
+
+        filteredData = planningData
+            .map(medewerker => {
+                // match op medewerkernaam?
+                const medewerkerNaamMatch = medewerker.medewerker.toLowerCase().includes(searchValue);
+
+                // filter klanten binnen die medewerker
+                const gefilterdeKlanten = medewerker.klanten.filter(k =>
+                    k.klant.toLowerCase().includes(searchValue)
+                );
+
+                // medewerker matcht -> neem alle klanten
+                if (medewerkerNaamMatch) {
+                    return {
+                        ...medewerker,
+                        klanten: [...medewerker.klanten]
+                    };
+                }
+
+                // anders: alleen de klanten die matchen
+                if (gefilterdeKlanten.length > 0) {
+                    return {
+                        ...medewerker,
+                        klanten: gefilterdeKlanten
+                    };
+                }
+
+                // geen match -> valt weg
+                return null;
+            })
+            .filter(Boolean);
+    }
+
     // ---- TABEL RENDER ----
     function renderTable() {
         const startWeek = currentPage * weeksPerPage + 1;
         const endWeek = Math.min(startWeek + weeksPerPage - 1, totalWeeks);
 
+        // Zorg dat elke zichtbare week uren heeft
+        fillWeekHoursForRange(startWeek, endWeek, filteredData);
+
         // Label bovenin
         const weekRangeLabel = document.getElementById("weekRangeLabel");
         weekRangeLabel.textContent = `Week ${startWeek}–${endWeek}`;
 
-        // Zorg dat de data voor deze weken gevuld is
-        fillWeekHoursForRange(startWeek, endWeek);
-
         // TABLE HEAD
         const headRow = document.getElementById("tableHeadRow");
-        headRow.innerHTML = `<th>Overzicht</th>`;
+        headRow.innerHTML = `<th>Naam medewerker / Klant</th>`;
         for (let i = startWeek; i <= endWeek; i++) {
             headRow.innerHTML += `<th>Week ${i}</th>`;
         }
@@ -231,20 +404,29 @@
         const body = document.getElementById("tableBody");
         body.innerHTML = "";
 
-        planningData.forEach(medewerker => {
-            // 1. Rij voor medewerker zelf (som van alle klanturen)
+        // We houden ook een totaal per week bij over alle medewerkers+klanten
+        const totalsPerWeek = {};
+        for (let w = startWeek; w <= endWeek; w++) {
+            totalsPerWeek[w] = 0;
+        }
+
+        // 1. medewerker + klant rijen
+        filteredData.forEach(medewerker => {
+            // medewerker-rij (som van uren over alle klanten)
             const medewerkerRow = document.createElement("tr");
             medewerkerRow.classList.add("medewerker-row");
 
             let medewerkerHTML = `<td>${medewerker.medewerker}</td>`;
 
             for (let w = startWeek; w <= endWeek; w++) {
-                // sommeer uren over alle klanten voor deze medewerker in deze week
                 let som = 0;
                 medewerker.klanten.forEach(entry => {
                     const uren = entry.urenPerWeek[w] || 0;
                     som += uren;
                 });
+
+                // voeg toe aan totaal per week
+                totalsPerWeek[w] += som;
 
                 medewerkerHTML += `<td>${som} u</td>`;
             }
@@ -252,7 +434,7 @@
             medewerkerRow.innerHTML = medewerkerHTML;
             body.appendChild(medewerkerRow);
 
-            // 2. Rij per klant onder die medewerker
+            // klant-rijen onder medewerker
             medewerker.klanten.forEach(entry => {
                 const klantRow = document.createElement("tr");
                 klantRow.classList.add("klant-row");
@@ -268,9 +450,38 @@
             });
         });
 
+        // 2. totaal rij onderaan
+        const totaalRow = document.createElement("tr");
+        totaalRow.classList.add("totaal-row");
+
+        let totaalHTML = `<td>Totaal uren</td>`;
+        for (let w = startWeek; w <= endWeek; w++) {
+            totaalHTML += `<td>${totalsPerWeek[w]} u</td>`;
+        }
+        totaalRow.innerHTML = totaalHTML;
+        body.appendChild(totaalRow);
+
+        // Toon/verberg 'geen resultaten'
+        const tableContainer = document.getElementById("tableContainer");
+        const noResults = document.getElementById("noResults");
+
+        if (filteredData.length === 0) {
+            tableContainer.style.display = "none";
+            noResults.style.display = "block";
+        } else {
+            tableContainer.style.display = "block";
+            noResults.style.display = "none";
+        }
+
         // Navigatieknoppen updaten
         document.getElementById("prevPage").disabled = currentPage === 0;
         document.getElementById("nextPage").disabled = endWeek >= totalWeeks;
+    }
+
+    // ---- HELPER OM FILTER TOE TE PASSEN EN OPNIEUW TE RENDEREN ----
+    function updateAndRender() {
+        applySearchFilter();
+        renderTable();
     }
 
     // ---- PAGINERING BUTTON EVENTS ----
@@ -288,8 +499,33 @@
         }
     });
 
+    // ---- ZOEKVELD EVENTS ----
+    const searchInputEl = document.getElementById("searchInput");
+    const clearSearchBtn = document.getElementById("clearSearch");
+    const clearAllFiltersBtn = document.getElementById("clearAllFilters");
+
+    searchInputEl.addEventListener("input", () => {
+        clearSearchBtn.style.display = searchInputEl.value ? "block" : "none";
+        updateAndRender();
+    });
+
+    clearSearchBtn.addEventListener("click", () => {
+        searchInputEl.value = "";
+        clearSearchBtn.style.display = "none";
+        updateAndRender();
+    });
+
+    clearAllFiltersBtn.addEventListener("click", () => {
+        searchInputEl.value = "";
+        clearSearchBtn.style.display = "none";
+        updateAndRender();
+    });
+
     // Init tabel zodra DOM klaar is
-    document.addEventListener("DOMContentLoaded", renderTable);
+    document.addEventListener("DOMContentLoaded", () => {
+        applySearchFilter();
+        renderTable();
+    });
 </script>
 
 </body>
