@@ -1,0 +1,245 @@
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-header-actions {
+            display: flex;
+            gap: .5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Foutmeldingen bij inputs */
+        .error-message {
+            color: #d32f2f;
+            font-size: .8rem;
+            line-height: 1.2;
+            margin-top: .25rem;
+            display: none;
+        }
+        .error-message.show {
+            display: block;
+        }
+        input.error, select.error {
+            border-color: #d32f2f;
+            background-color: #fff5f5;
+        }
+
+        /* modal layout fallback */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .modal-content {
+            background: #fff;
+            border-radius: .5rem;
+            box-shadow: 0 2rem 4rem rgba(0,0,0,.15);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .modal-header, .modal-footer {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .5rem;
+        }
+        .modal-footer {
+            border-top: 1px solid #e5e7eb;
+            border-bottom: none;
+        }
+        .modal-body {
+            padding: 1rem 1.25rem;
+            overflow-y: auto;
+        }
+        .modal-close {
+            background: none;
+            border: 0;
+            font-size: 1.25rem;
+            line-height: 1;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .form-group {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1rem;
+        }
+        label {
+            font-size: .9rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: .4rem;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select {
+            border: 1px solid #d1d5db;
+            border-radius: .4rem;
+            padding: .6rem .7rem;
+            font-size: .9rem;
+            background-color: #fff;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            border: 0;
+            border-radius: .4rem;
+            font-size: .9rem;
+            line-height: 1.2;
+            font-weight: 500;
+            cursor: pointer;
+            padding: .6rem .8rem;
+        }
+
+        
+        .btn-danger {
+            background-color: #dc2626;
+            color: #fff;
+        }
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            background: #f3f4f6;
+            color: #111827;
+            border: 1px solid #d1d5db;
+            border-radius: .4rem;
+            font-size: .8rem;
+            line-height: 1.2;
+            padding: .4rem .6rem;
+            cursor: pointer;
+        }
+        .btn-action svg {
+            min-width: 16px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .bulk-actions-bar {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: .5rem;
+            padding: .75rem 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: .75rem;
+        }
+
+        .error-modal-content .modal-header h3 {
+            color: #dc2626;
+        }
+
+        .confirm-modal-content .confirm-icon {
+            font-size: 2rem;
+            margin-bottom: .5rem;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #6b7280;
+        }
+        .no-results-icon {
+            font-size: 2rem;
+            margin-bottom: .5rem;
+        }
+
+        .loading {
+            opacity: .6;
+            pointer-events: none;
+        }
+
+.pagination-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+.pagination-inner {
+    display: flex;
+    gap: .75rem;
+    align-items: center;
+}
+.pagination-inner button[disabled] {
+    opacity: .4;
+    cursor: not-allowed;
+}
+.pagination-inner button {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: .4rem;
+    padding: 0.6rem 0.8rem;
+    cursor: pointer;
+}
+
+/* Foutmeldingen bij inputs */
+        .error-message {
+            color: #d32f2f;
+            font-size: .8rem;
+            line-height: 1.2;
+            margin-top: .25rem;
+            display: none;
+        }
+        .error-message.show {
+            display: block;
+        }
+        input.error, select.error {
+            border-color: #d32f2f;
+            background-color: #fff5f5;
+        }
+
+        /* Groepeer de knoppen rechts */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Zorg dat Export-knop links staat van Toevoegen */
+.header-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+/* Witte knopstijl */
+.btn-white {
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ccc;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-white:hover {
+  background-color: #f5f5f5;
+  color: #000;
+}
