@@ -1,0 +1,140 @@
+/* Layout header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.page-header-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+
+/* Foutmeldingen bij inputs */
+.error-message {
+  color: #d32f2f;
+  font-size: .8rem;
+  line-height: 1.2;
+  margin-top: .25rem;
+  display: none;
+}
+.error-message.show { display: block; }
+input.error, select.error { border-color: #d32f2f; background-color: #fff5f5; }
+
+/* Buttons */
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  background: #f3f4f6;
+  color: #111827;
+  border: 1px solid #d1d5db;
+  border-radius: .4rem;
+  font-size: .8rem;
+  line-height: 1.2;
+  padding: .4rem .6rem;
+  cursor: pointer;
+}
+.btn-action svg { min-width: 16px; }
+
+/* Tabel + bulkbar */
+.table-container { overflow-x: auto; }
+.bulk-actions-bar {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: .5rem;
+  padding: .75rem 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .75rem;
+}
+
+.no-results { text-align: center; padding: 2rem 1rem; color: #6b7280; }
+.no-results-icon { font-size: 2rem; margin-bottom: .5rem; }
+.loading { opacity: .6; pointer-events: none; }
+
+/* Form layout */
+.form-row { display: flex; flex-wrap: wrap; gap: 1rem; }
+.form-group { flex: 1; min-width: 0; display: flex; flex-direction: column; margin-bottom: 1rem; }
+label { font-size: .9rem; font-weight: 500; color: #374151; margin-bottom: .4rem; }
+input[type="text"], input[type="email"], select {
+  border: 1px solid #d1d5db; border-radius: .4rem; padding: .6rem .7rem; font-size: .9rem; background-color: #fff;
+}
+
+.form-info { display: flex; justify-content: flex-end; padding: .25rem 1.25rem 0 1.25rem; }
+.form-info small em { font-style: normal; color: #6b7280; }
+
+/* Modals */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.modal-content {
+  background: #fff;
+  border-radius: .5rem;
+  box-shadow: 0 2rem 4rem rgba(0,0,0,.15);
+  width: 100%;
+  max-width: 500px; /* aangepast van 640px → zelfde als bij klanten */
+  max-height: 90dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.modal-header, .modal-footer {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+}
+.modal-footer {
+  border-top: 1px solid #e5e7eb;
+  border-bottom: none;
+}
+.modal-body {
+  padding: 1rem 1.25rem;
+  overflow-y: auto;
+}
+.modal-close {
+  background: none;
+  border: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+/* Hint-tekst onder inputs */
+.field-hint {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: .4rem;
+  color: #6b7280;
+  font-size: .8rem;
+  line-height: 1.35;
+  margin-top: .35rem;
+}
+
+/* Info-icoon vóór de hint (pure CSS, geen extra HTML nodig) */
+.field-hint::before {
+  content: "";
+  width: 14px;
+  height: 14px;
+  margin-top: 2px;
+  background: currentColor;
+  -webkit-mask: url('data:image/svg+xml;utf8,\
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">\
+    <path fill="black" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 3.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5Zm1.6 13h-3.2a1 1 0 0 1 0-2h.6v-4h-.6a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v5h.2a1 1 0 1 1 0 2Z"/>\
+  </svg>') no-repeat center / contain;
+          mask: url('data:image/svg+xml;utf8,\
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">\
+    <path fill="black" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 3.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5Zm1.6 13h-3.2a1 1 0 0 1 0-2h.6v-4h-.6a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v5h.2a1 1 0 1 1 0 2Z"/>\
+  </svg>') no-repeat center / contain;
+}
