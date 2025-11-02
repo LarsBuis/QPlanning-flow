@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klantenplanning - QPlanning</title>
+    <link rel="stylesheet" href="../styles.css">
+
+    <style>
+        .week-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .week-navigation span {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        /* groepsrij (klant) */
+        .medewerker-row td {
+            font-weight: 600;
+            background: #f9fafb;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        /* subrij (medewerker) */
+        .klant-row td:first-child {
+            padding-left: 2rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        .klant-row td {
+            background: #fff;
+        }
+
+        /* totaal rij onderaan */
+        .totaal-row td {
+            background: #eef2ff;
+            font-weight: 600;
+            border-top: 2px solid #6366f1;
+            color: #1e1e2f;
+        }
+        .totaal-row td:first-child {
+            font-weight: 700;
+        }
+
+        /* zoekbalk */
+        .filters-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 220px;
+            max-width: 400px;
+        }
+        .search-input {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: .4rem;
+            padding: .6rem .75rem;
+            font-size: .9rem;
+        }
+        .search-clear {
+            position: absolute;
+            top: 50%;
+            right: .5rem;
+            transform: translateY(-50%);
+            background: #e5e7eb;
+            border: 1px solid #9ca3af;
+            border-radius: .3rem;
+            font-size: .8rem;
+            line-height: 1;
+            padding: .25rem .4rem;
+            cursor: pointer;
+            color: #374151;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #6b7280;
+            display: none;
+        }
+        .no-results-icon {
+            font-size: 2rem;
+            margin-bottom: .5rem;
+        }
+        .no-results h3 {
+            margin: 0 0 .25rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #374151;
+        }
+        .no-results p {
+            margin: 0 0 1rem;
+            font-size: .9rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            border: 0;
+            border-radius: .4rem;
+            font-size: .9rem;
+            line-height: 1.2;
+            font-weight: 500;
+            cursor: pointer;
+            padding: .6rem .8rem;
+        }
+        .btn-secondary {
+            background-color: #f3f4f6;
+            color: #111827;
+            border: 1px solid #d1d5db;
+        }
+
+        .table-container { overflow-x: auto; }
+    </style>
+</head>
+
+<body>
+<header class="header">
+    <div class="header-container">
+        <div class="header-left">
+            <div class="logo"><h1>QPlanning</h1></div>
+            <nav class="main-nav">
+                <ul class="nav-list">
+                    <li><a href="/index.html" class="nav-link active">Overzicht</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">Plannen</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/Boekingen/BoekingOverzicht.html" class="dropdown-link">Boekingen</a></li>
+                            <li><a href="#" class="dropdown-link">Klantenplanning</a></li>
+                            <li><a href="/Medewerkerplanning/medewerkerplanning.html" class="dropdown-link">Medewerkerplanning</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">Beheer</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/klanten/klant.html" class="dropdown-link">Klanten beheren</a></li>
+                            <li><a href="/Medewerker/medewerkerbeheer.html" class="dropdown-link">Medewerkers beheren</a></li>
+                            <li><a href="/Gebruikers/Gebruikers.html" class="dropdown-link">Gebruikers beheren</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="header-right">
+            <div class="account-dropdown">
+                <button class="account-btn" id="accountBtn">
+                    <svg class="account-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </button>
+                <ul class="account-menu" id="accountMenu">
+                    <li><a href="#" class="account-link">Wijzig wachtwoord</a></li>
+                    <li><a href="#" class="account-link">Log uit</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="main-content">
+    <div class="content-container">
+        <div class="page-header"><h2>Klantenplanning</h2></div>
+
+        <div class="week-navigation">
+            <button class="btn btn-secondary" id="prevPage">Vorige pagina</button>
+            <span id="weekRangeLabel">Week 1–5</span>
+            <button class="btn btn-secondary" id="nextPage">Volgende pagina</button>
+        </div>
+
+        <!-- Zoekbalk -->
+        <div class="filters-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Zoek op klant of medewerker..." class="search-input">
+                <button class="search-clear" id="clearSearch" title="Zoekopdracht wissen" style="display:none;">×</button>
+            </div>
+        </div>
+
+        <div class="table-container" id="tableContainer">
+            <table class="data-table" id="planningTable">
+                <thead>
+                    <tr id="tableHeadRow">
+                        <th>Klant / Medewerker</th>
+                        <!-- Weekkolommen worden dynamisch toegevoegd -->
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="no-results" id="noResults">
+            <div class="no-results-icon">🔍</div>
+            <h3>Geen resultaten</h3>
+            <p>Er is geen planning gevonden die overeenkomt met je zoekopdracht.</p>
+            <button class="btn btn-secondary" id="clearAllFilters">Zoekopdracht wissen</button>
+        </div>
+    </div>
+</main>
+
+<script>
+/* ---------- NAVBAR ---------- */
+document.addEventListener('DOMContentLoaded', function () {
+    const dropdowns = document.querySelectorAll('.dropdown');
+    dropdowns.forEach(dropdown => {
+        const toggle = dropdown.querySelector('.dropdown-toggle');
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            dropdowns.forEach(d => { if (d !== dropdown) d.classList.remove('active'); });
+            dropdown.classList.toggle('active');
+        });
+    });
+    const accountDropdown = document.querySelector('.account-dropdown');
+    const accountBtn = document.getElementById('accountBtn');
+    accountBtn.addEventListener('click', function(e) {
+        e.preventDefault(); e.stopPropagation();
+        accountDropdown.classList.toggle('active');
+    });
+    document.addEventListener('click', function() {
+        dropdowns.forEach(d => d.classList.remove('active'));
+        accountDropdown.classList.remove('active');
+    });
+    document.querySelectorAll('.dropdown-menu, .account-menu').forEach(menu => {
+        menu.addEventListener('click', e => e.stopPropagation());
+    });
+});
+
+/* ---------- DEMO DATA (medewerker -> klanten) ---------- */
+const planningData = [
+    { medewerker: "Jan Jansen", klanten: [{ klant: "Groot Bedrijf BV", urenPerWeek: {} }, { klant: "Tech Solutions NL", urenPerWeek: {} }] },
+    { medewerker: "Pieter Smit", klanten: [{ klant: "LogiTrans Europe", urenPerWeek: {} }, { klant: "Retail Experts BV", urenPerWeek: {} }] },
+    { medewerker: "Marieke de Vries", klanten: [{ klant: "GreenFuture Holding", urenPerWeek: {} }] },
+    { medewerker: "Lisa van Dijk", klanten: [{ klant: "Retail Experts BV", urenPerWeek: {} }, { klant: "City Finance Group", urenPerWeek: {} }] },
+    { medewerker: "Ahmed El Amrani", klanten: [{ klant: "Groot Bedrijf BV", urenPerWeek: {} }, { klant: "City Finance Group", urenPerWeek: {} }] }
+];
+
+/* Helpers */
+function generateRandomHours(){ return Math.floor(Math.random()*9); } // 0..8
+
+function fillWeekHoursForRange(startWeek, endWeek, dataSet){
+    dataSet.forEach(medewerker => {
+        medewerker.klanten.forEach(entry => {
+            for (let w = startWeek; w <= endWeek; w++){
+                if (entry.urenPerWeek[w] === undefined){
+                    entry.urenPerWeek[w] = generateRandomHours();
+                }
+            }
+        });
+    });
+}
+
+/* Pivot naar klant -> medewerkers */
+function pivotDataByClient(dataSet){
+    const map = new Map(); // klant -> { klant, medewerkers: [{medewerker, urenPerWeek}] }
+    dataSet.forEach(med => {
+        med.klanten.forEach(k => {
+            if (!map.has(k.klant)) map.set(k.klant, { klant: k.klant, medewerkers: [] });
+            map.get(k.klant).medewerkers.push({ medewerker: med.medewerker, urenPerWeek: k.urenPerWeek });
+        });
+    });
+    return Array.from(map.values()).sort((a,b)=>a.klant.localeCompare(b.klant,'nl'));
+}
+
+/* ---------- Paginering ---------- */
+const totalWeeks = 52;
+const weeksPerPage = 5;
+let currentPage = 0;
+
+/* ---------- Filter ---------- */
+let filteredData = [...planningData];
+
+function applySearchFilter(){
+    const searchValue = document.getElementById("searchInput").value.trim().toLowerCase();
+    if (!searchValue){ filteredData = [...planningData]; return; }
+
+    filteredData = planningData.map(medewerker => {
+        const matchMed = medewerker.medewerker.toLowerCase().includes(searchValue);
+        const gefilterdeKlanten = medewerker.klanten.filter(k => k.klant.toLowerCase().includes(searchValue));
+        if (matchMed) return { ...medewerker, klanten: [...medewerker.klanten] };
+        if (gefilterdeKlanten.length > 0) return { ...medewerker, klanten: gefilterdeKlanten };
+        return null;
+    }).filter(Boolean);
+}
+
+/* ---------- Render: Klant (ouder) per week totaal, subrij medewerkers per week ---------- */
+function renderTable(){
+    const startWeek = currentPage * weeksPerPage + 1;
+    const endWeek = Math.min(startWeek + weeksPerPage - 1, totalWeeks);
+
+    // uren invullen voor zichtbare range
+    fillWeekHoursForRange(startWeek, endWeek, filteredData);
+
+    // pivot naar klanten
+    const clients = pivotDataByClient(filteredData);
+
+    // label
+    document.getElementById("weekRangeLabel").textContent = `Week ${startWeek}–${endWeek}`;
+
+    // table head
+    const headRow = document.getElementById("tableHeadRow");
+    headRow.innerHTML = `<th>Klant / Medewerker</th>`;
+    for (let w = startWeek; w <= endWeek; w++){
+        headRow.innerHTML += `<th>Week ${w}</th>`;
+    }
+
+    // body
+    const body = document.getElementById("tableBody");
+    body.innerHTML = "";
+
+    // totaal per week over alle klanten
+    const totalsPerWeek = {};
+    for (let w = startWeek; w <= endWeek; w++) totalsPerWeek[w] = 0;
+
+    clients.forEach(klant => {
+        // ouderrij (klant): som per week over alle medewerkers
+        const klantRow = document.createElement("tr");
+        klantRow.classList.add("medewerker-row");
+
+        let klantHTML = `<td>${klant.klant}</td>`;
+        for (let w = startWeek; w <= endWeek; w++){
+            let somWeek = 0;
+            klant.medewerkers.forEach(m => { somWeek += (m.urenPerWeek[w] || 0); });
+            totalsPerWeek[w] += somWeek;
+            klantHTML += `<td>${somWeek} u</td>`;
+        }
+        klantRow.innerHTML = klantHTML;
+        body.appendChild(klantRow);
+
+        // subrijen (medewerkers) met hun uren per week
+        klant.medewerkers.forEach(med => {
+            const medRow = document.createElement("tr");
+            medRow.classList.add("klant-row");
+
+            let medHTML = `<td>${med.medewerker}</td>`;
+            for (let w = startWeek; w <= endWeek; w++){
+                medHTML += `<td>${med.urenPerWeek[w] ?? 0} u</td>`;
+            }
+            medRow.innerHTML = medHTML;
+            body.appendChild(medRow);
+        });
+    });
+
+    // totaalrij onderaan: som per week over alle klanten
+    const totaalRow = document.createElement("tr");
+    totaalRow.classList.add("totaal-row");
+    let totaalHTML = `<td>Totaal uren</td>`;
+    for (let w = startWeek; w <= endWeek; w++){
+        totaalHTML += `<td>${totalsPerWeek[w]} u</td>`;
+    }
+    totaalRow.innerHTML = totaalHTML;
+    body.appendChild(totaalRow);
+
+    // tonen/verbergen
+    document.getElementById("tableContainer").style.display = clients.length ? "block" : "none";
+    document.getElementById("noResults").style.display = clients.length ? "none" : "block";
+
+    // navigatie
+    document.getElementById("prevPage").disabled = currentPage === 0;
+    document.getElementById("nextPage").disabled = endWeek >= totalWeeks;
+}
+
+/* ---------- Events ---------- */
+function updateAndRender(){ applySearchFilter(); renderTable(); }
+
+document.getElementById("prevPage").addEventListener("click", () => {
+    if (currentPage > 0){ currentPage--; renderTable(); }
+});
+document.getElementById("nextPage").addEventListener("click", () => {
+    if ((currentPage + 1) * weeksPerPage < totalWeeks){ currentPage++; renderTable(); }
+});
+
+const searchInputEl = document.getElementById("searchInput");
+const clearSearchBtn = document.getElementById("clearSearch");
+const clearAllFiltersBtn = document.getElementById("clearAllFilters");
+
+searchInputEl.addEventListener("input", () => {
+    clearSearchBtn.style.display = searchInputEl.value ? "block" : "none";
+    updateAndRender();
+});
+clearSearchBtn.addEventListener("click", () => {
+    searchInputEl.value = "";
+    clearSearchBtn.style.display = "none";
+    updateAndRender();
+});
+clearAllFiltersBtn.addEventListener("click", () => {
+    searchInputEl.value = "";
+    clearSearchBtn.style.display = "none";
+    updateAndRender();
+});
+
+document.addEventListener("DOMContentLoaded", () => { applySearchFilter(); renderTable(); });
+</script>
+
+</body>
+</html>
