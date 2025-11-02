@@ -172,9 +172,6 @@ document.addEventListener('DOMContentLoaded', function() {
       const gebruikersnaamShown = g.gebruikersnaam || g.email || '-';
 
       tr.innerHTML = `
-        <td class="select-column">
-          <input type="checkbox" class="row-checkbox select-checkbox" data-id="${g.id}" ${checked ? 'checked' : ''}>
-        </td>
         <td data-label="Naam">${fullName(g) || '-'}</td>
         <td data-label="E-mail">${g.email || '-'}</td>
         <td data-label="Gebruikersnaam">${gebruikersnaamShown}</td>
@@ -227,36 +224,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // --- Bulk selectie ---
-  function setupBulkSelection() {
-    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-    const bulkDeleteBtn = document.getElementById('bulkDelete');
-    selectAllCheckbox.addEventListener('change', () => {
-      if (selectAllCheckbox.checked) gefilterdeGebruikers.forEach(g => geselecteerdeIds.add(g.id));
-      else gefilterdeGebruikers.forEach(g => geselecteerdeIds.delete(g.id));
-      renderTabel();
-      updateBulkActionsBar();
-    });
-    bulkDeleteBtn.addEventListener('click', () => {
-      showConfirmDelete([...geselecteerdeIds], `${geselecteerdeIds.size} gebruikers`);
-    });
-  }
-  function updateBulkActionsBar() {
-    const count = gefilterdeGebruikers.filter(g => geselecteerdeIds.has(g.id)).length;
-    const bulkActionsBar = document.getElementById('bulkActionsBar');
-    const selectedCountEl = document.getElementById('selectedCount');
-    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-
-    if (count === 0) {
-      bulkActionsBar.style.display = 'none';
-      selectAllCheckbox.checked = false;
-      selectAllCheckbox.indeterminate = false;
-    } else {
-      bulkActionsBar.style.display = 'flex';
-      selectedCountEl.textContent = count;
-      selectAllCheckbox.checked = count === gefilterdeGebruikers.length;
-      selectAllCheckbox.indeterminate = count < gefilterdeGebruikers.length;
-    }
-  }
+  function setupBulkSelection() {}
+  function updateBulkActionsBar() {}
 
   // --- Validatie (inline) ---
   function clearError(id) {
@@ -298,7 +267,7 @@ document.addEventListener('DOMContentLoaded', function() {
         break;
 
       case 'email':
-        if (!val) { showError(id, 'E-mail is verplicht.'); break; }
+        if (!val) { showError(id, 'E-mailadres moet een geldig formaat hebben (bijv. naam@domein.com)'); break; }
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) { showError(id, 'Ongeldig e-mailadres.'); }
         break;
 

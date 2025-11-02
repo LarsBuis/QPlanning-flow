@@ -22,8 +22,8 @@
             <a href="#" class="nav-link dropdown-toggle">Plannen</a>
             <ul class="dropdown-menu">
               <li><a href="/Boekingen/BoekingOverzicht.html" class="dropdown-link">Boekingen</a></li>
-              <li><a href="#" class="dropdown-link">Klantenplanning</a></li>
-              <li><a href="#" class="dropdown-link">Medewerkerplanning</a></li>
+              <li><a href="/Klantplanning/klantplanning.html" class="dropdown-link">Klantenplanning</a></li>
+              <li><a href="/Medewerkerplanning/medewerkerplanning.html" class="dropdown-link">Medewerkerplanning</a></li>
             </ul>
           </li>
           <li class="dropdown">
@@ -76,18 +76,13 @@
       </div>
     </div>
 
-    <div class="bulk-actions-bar" id="bulkActionsBar" style="display:none;">
-      <div class="bulk-info"><span id="selectedCount">0</span> gebruikers geselecteerd</div>
-      <div class="bulk-buttons">
-        <button class="btn btn-secondary" id="bulkDelete">Verwijderen</button>
-      </div>
-    </div>
+    <!-- bulk-actions-bar verwijderd -->
 
     <div class="table-container">
       <table class="data-table">
         <thead>
           <tr>
-            <th class="select-column"><input type="checkbox" id="selectAllCheckbox" class="select-checkbox"></th>
+            <!-- selecteer-alles kolom verwijderd -->
             <th>Naam</th>
             <th>E-mail</th>
             <th>Gebruikersnaam</th>
@@ -160,7 +155,6 @@
           <option value="Manager">Manager</option>
           <option value="Planner">Planner</option>
           <option value="Medewerker">Medewerker</option>
-          <option value="Gast">Gast</option>
         </select>
         <div class="error-message" id="rolError"></div>
       </div>

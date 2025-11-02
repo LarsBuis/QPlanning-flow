@@ -233,121 +233,78 @@ document.addEventListener('DOMContentLoaded', function () {
     updateBulkActionsBar();
   }
 
-  // --- Tabel Render Logica ---
-  function renderTabel() {
-    tabelBody.innerHTML = '';
+ function renderTabel() {
+  tabelBody.innerHTML = '';
 
-    if (gefilterdeKlanten.length === 0) {
-      tableContainer.style.display = 'none';
-      noResults.style.display = 'block';
-    } else {
-      tableContainer.style.display = 'block';
-      noResults.style.display = 'none';
-    }
-
-    gefilterdeKlanten.forEach(klant => {
-      const tr = document.createElement('tr');
-      tr.dataset.id = klant.id;
-      const isChecked = geselecteerdeIds.has(klant.id);
-
-      tr.innerHTML = `
-        <td class="select-column">
-          <input type="checkbox" class="row-checkbox select-checkbox" data-id="${klant.id}" ${isChecked ? 'checked' : ''}>
-        </td>
-        <td data-label="Klant naam">${klant.klantNaam || '-'}</td>
-        <td data-label="Partner/Manager">${klant.partnerManager || '-'}</td>
-        <td data-label="Budget">${formatCurrency(klant.budget)}</td>
-        <td data-label="Startdatum">${formatDate(klant.startdatum)}</td>
-        <td data-label="Einddatum">${formatDate(klant.einddatum)}</td>
-        <td class="actions">
-          <div class="action-buttons">
-            <button class="btn-action btn-edit" data-id="${klant.id}" title="Bewerken">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-              </svg>
-              <span>Bewerken</span>
-            </button>
-            <button class="btn-action btn-delete" data-id="${klant.id}" title="Verwijderen">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-              </svg>
-              <span>Verwijderen</span>
-            </button>
-          </div>
-        </td>
-      `;
-      tabelBody.appendChild(tr);
-    });
-
-    koppelTabelActies();
+  if (gefilterdeKlanten.length === 0) {
+    tableContainer.style.display = 'none';
+    noResults.style.display = 'block';
+  } else {
+    tableContainer.style.display = 'block';
+    noResults.style.display = 'none';
   }
+
+  gefilterdeKlanten.forEach(klant => {
+    const tr = document.createElement('tr');
+    tr.dataset.id = klant.id;
+
+    tr.innerHTML = `
+      <td data-label="Klant naam">${klant.klantNaam || '-'}</td>
+      <td data-label="Partner/Manager">${klant.partnerManager || '-'}</td>
+      <td data-label="Budget">${formatCurrency(klant.budget)}</td>
+      <td data-label="Startdatum">${formatDate(klant.startdatum)}</td>
+      <td data-label="Einddatum">${formatDate(klant.einddatum)}</td>
+      <td class="actions">
+        <div class="action-buttons">
+          <button class="btn-action btn-edit" data-id="${klant.id}" title="Bewerken">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            <span>Bewerken</span>
+          </button>
+          <button class="btn-action btn-delete" data-id="${klant.id}" title="Verwijderen">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            <span>Verwijderen</span>
+          </button>
+        </div>
+      </td>
+    `;
+    tabelBody.appendChild(tr);
+  });
+
+  koppelTabelActies();
+}
 
   // --- Koppel Acties ---
-  function koppelTabelActies() {
-    // Checkboxen
-    tabelBody.querySelectorAll('.row-checkbox').forEach(checkbox => {
-      checkbox.addEventListener('change', (e) => {
-        const id = parseInt(e.target.dataset.id);
-        if (e.target.checked) {
-          geselecteerdeIds.add(id);
-        } else {
-          geselecteerdeIds.delete(id);
-        }
-        updateBulkActionsBar();
-      });
+function koppelTabelActies() {
+  // Edit
+  tabelBody.querySelectorAll('.btn-edit').forEach(knop => {
+    knop.addEventListener('click', (e) => {
+      const id = parseInt(e.currentTarget.dataset.id);
+      openKlantModal('edit', id);
     });
+  });
 
-    // Edit Knoppen
-    tabelBody.querySelectorAll('.btn-edit').forEach(knop => {
-      knop.addEventListener('click', (e) => {
-        const id = parseInt(e.currentTarget.dataset.id);
-        openKlantModal('edit', id);
-      });
+  // Individueel verwijderen
+  tabelBody.querySelectorAll('.btn-delete').forEach(knop => {
+    knop.addEventListener('click', (e) => {
+      const id = parseInt(e.currentTarget.dataset.id);
+      const klant = klantenData.find(k => k.id === id);
+      showConfirmDelete([id], klant ? `klant "${klant.klantNaam}"` : 'deze klant');
     });
+  });
+}
 
-    // Delete Knoppen
-    tabelBody.querySelectorAll('.btn-delete').forEach(knop => {
-      knop.addEventListener('click', (e) => {
-        const id = parseInt(e.currentTarget.dataset.id);
-        const klant = klantenData.find(k => k.id === id);
-        showConfirmDelete([id], klant ? `klant "${klant.klantNaam}"` : 'deze klant');
-      });
-    });
-  }
 
   // --- Bulk Actie Logica ---
-  function setupBulkSelection() {
-    selectAllCheckbox.addEventListener('change', () => {
-      if (selectAllCheckbox.checked) {
-        gefilterdeKlanten.forEach(k => geselecteerdeIds.add(k.id));
-      } else {
-        gefilterdeKlanten.forEach(k => geselecteerdeIds.delete(k.id));
-      }
-      renderTabel();
-      updateBulkActionsBar();
-    });
+function setupBulkSelection() { /* bulk selectie uitgeschakeld */ }
 
-    bulkDeleteBtn.addEventListener('click', () => {
-      showConfirmDelete([...geselecteerdeIds], `${geselecteerdeIds.size} klanten`);
-    });
-  }
+function updateBulkActionsBar() { /* bulk actions uitgeschakeld */ }
 
-  function updateBulkActionsBar() {
-    const geselecteerdInView = gefilterdeKlanten.filter(k => geselecteerdeIds.has(k.id)).length;
-
-    if (geselecteerdInView === 0) {
-      bulkActionsBar.style.display = 'none';
-      selectAllCheckbox.checked = false;
-      selectAllCheckbox.indeterminate = false;
-    } else {
-      bulkActionsBar.style.display = 'flex';
-      selectedCountEl.textContent = geselecteerdInView;
-      selectAllCheckbox.checked = geselecteerdInView === gefilterdeKlanten.length;
-      selectAllCheckbox.indeterminate = geselecteerdInView < gefilterdeKlanten.length;
-    }
-  }
 
   // --- Modal Logica ---
   function openKlantModal(mode, klantId = null) {
@@ -459,11 +416,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Specifieke extra checks
     if (klantNaamVal && klantNaamVal.length < 2) {
       addError('klant-naam', 'Klant naam moet minimaal 2 karakters lang zijn.');
-    }
-
-    // NIEUW: klantnaam moet met hoofdletter beginnen
-    if (klantNaamVal && !/^[A-Z]/.test(klantNaamVal)) {
-      addError('klant-naam', 'Klant naam moet beginnen met een hoofdletter.');
     }
 
     // budget validaties
@@ -664,6 +616,163 @@ document.addEventListener('DOMContentLoaded', function () {
       if (msg) { msg.textContent = ''; msg.classList.remove('show'); }
     });
   }
+
+  // =========================
+  // 🔢 Alleen cijfers/decimalen: boekjaar & budget
+  // =========================
+  const boekjaarJaarEl = document.getElementById('boekjaar-jaar');
+  const boekjaarBudgetEl = document.getElementById('boekjaar-budget');
+  const klantBudgetEl = document.getElementById('klant-budget');
+
+  function preventInvalidKeysForDigits(evt) {
+    const allowedCtrl = ['Backspace','Delete','Tab','ArrowLeft','ArrowRight','Home','End'];
+    if (allowedCtrl.includes(evt.key)) return;
+    if (!/^\d$/.test(evt.key)) evt.preventDefault();
+  }
+  function sanitizeDigits(el, maxLen) {
+    let v = el.value.replace(/\D/g, '');
+    if (typeof maxLen === 'number') v = v.slice(0, maxLen);
+    el.value = v;
+  }
+  function preventInvalidKeysForDecimal(evt) {
+    const allowedCtrl = ['Backspace','Delete','Tab','ArrowLeft','ArrowRight','Home','End'];
+    if (allowedCtrl.includes(evt.key)) return;
+    if (/^\d$/.test(evt.key)) return;
+    if ((evt.key === '.' || evt.key === ',') && !evt.currentTarget.value.includes('.') && !evt.currentTarget.value.includes(',')) return;
+    evt.preventDefault();
+  }
+  function sanitizeDecimal(el) {
+    let v = el.value.replace(/[^0-9.,]/g, '');
+    const hasDot = v.includes('.');
+    const hasComma = v.includes(',');
+    if (hasDot && hasComma) v = v.replace(/,/g, '.');
+    const parts = v.split(/[.,]/);
+    if (parts.length > 1) v = parts[0] + '.' + parts.slice(1).join('').replace(/[.]/g, '');
+    el.value = v;
+  }
+
+  boekjaarJaarEl?.setAttribute('inputmode', 'numeric');
+  klantBudgetEl?.setAttribute('inputmode', 'decimal');
+  boekjaarBudgetEl?.setAttribute('inputmode', 'decimal');
+
+  if (boekjaarJaarEl) {
+    boekjaarJaarEl.addEventListener('keydown', preventInvalidKeysForDigits);
+    boekjaarJaarEl.addEventListener('input', () => sanitizeDigits(boekjaarJaarEl, 4));
+    boekjaarJaarEl.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text');
+      boekjaarJaarEl.value = text.replace(/\D/g, '').slice(0, 4);
+    });
+  }
+
+  [klantBudgetEl, boekjaarBudgetEl].forEach((el) => {
+    if (!el) return;
+    el.addEventListener('keydown', preventInvalidKeysForDecimal);
+    el.addEventListener('input', () => sanitizeDecimal(el));
+    el.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text');
+      const tmp = text.replace(/[^0-9.,]/g, '');
+      el.value = tmp;
+      sanitizeDecimal(el);
+    });
+  });
+
+  // =========================
+  // 🔴 LIVE VALIDATIE (per veld, met jouw eigen foutteksten)
+  // =========================
+
+  // Mapping helper: haal het juiste error-element bij een field-id
+  function getErrorElementByFieldId(id) {
+    let errorEl = document.getElementById(id + 'Error');
+    if (!errorEl) {
+      if (id === 'klant-boekjaar-select') errorEl = document.getElementById('klantBoekjaarError');
+      else if (id === 'klant-budget') errorEl = document.getElementById('klant-budgetError');
+      else if (id === 'klant-startdatum') errorEl = document.getElementById('klant-startdatumError');
+      else if (id === 'klant-einddatum') errorEl = document.getElementById('klant-einddatumError');
+      else if (id === 'klant-partner') errorEl = document.getElementById('klant-partnerError');
+      else if (id === 'klant-verantwoordelijk') errorEl = document.getElementById('klant-verantwoordelijkError');
+      else if (id === 'klant-planbaar') errorEl = document.getElementById('klant-planbaarError');
+    }
+    return errorEl;
+  }
+
+  function setFieldError(id, message) {
+    const fieldEl = document.getElementById(id);
+    const errorEl = getErrorElementByFieldId(id);
+    if (fieldEl) fieldEl.classList.add('error');
+    if (errorEl) {
+      errorEl.textContent = message; // gebruik je eigen teksten uit validateForm()
+      errorEl.classList.add('show');
+    }
+  }
+
+  function clearFieldError(id) {
+    const fieldEl = document.getElementById(id);
+    const errorEl = getErrorElementByFieldId(id);
+    if (fieldEl) fieldEl.classList.remove('error');
+    if (errorEl) {
+      errorEl.textContent = '';
+      errorEl.classList.remove('show');
+    }
+  }
+
+  // Valideer alleen één specifiek veld, met dezelfde regels/teksten als validateForm()
+  function validateSingleField(id) {
+    const allErrors = validateForm(); // bereken alles met jouw huidige logica
+    const errForField = allErrors.find(e => e.id === id);
+
+    if (errForField) {
+      setFieldError(id, errForField.bericht);
+      return false;
+    } else {
+      clearFieldError(id);
+      return true;
+    }
+  }
+
+  // Als start/einddatum wijzigt: beide checken i.v.m. volgorde-eis
+  function validateDatesPair() {
+    validateSingleField('klant-startdatum');
+    validateSingleField('klant-einddatum');
+  }
+
+  // Koppel live events
+  const liveFieldIds = [
+    'klant-naam',
+    'klant-boekjaar-select',
+    'klant-budget',
+    'klant-partner',
+    'klant-verantwoordelijk',
+    'klant-planbaar',
+    'klant-startdatum',
+    'klant-einddatum'
+  ];
+
+  liveFieldIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    const handler = () => {
+      // budget hangt af van boekjaar; bij wijzigen van een van beide, hercontrole
+      if (id === 'klant-budget' || id === 'klant-boekjaar-select') {
+        validateSingleField('klant-budget');
+      } else if (id === 'klant-startdatum' || id === 'klant-einddatum') {
+        validateDatesPair();
+      } else {
+        validateSingleField(id);
+      }
+    };
+
+    // input voor typen, blur voor verlaten, change voor select/date
+    el.addEventListener('input', handler);
+    el.addEventListener('blur', handler);
+    el.addEventListener('change', handler);
+  });
+
+  // =========================
+  // EINDE LIVE VALIDATIE
+  // =========================
 
   // --- Formulier Submit Klant ---
   klantForm.addEventListener('submit', (e) => {
